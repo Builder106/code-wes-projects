@@ -6,7 +6,7 @@ Rather than housing the actual production source code (which lives directly in t
 
 ## Projects
 
-### 1. [Portal 2 Web Bridge](https://github.com/Code-Wes/portal-web-bridge)
+### 1. [Portal 2 Web Bridge](https://github.com/Code-Wes/portal-web-bridge) (In development)
 **Status:** In Development
 Turning a live instance of Portal 2 into an interactive web server. By launching Portal 2 with the `-netconport` flag, this project uses a Fastify backend and a React frontend to allow a crowd of users to safely control the game over a low-latency stream.
 - Architecture and Milestones: [TODO-Portal2.md](./TODO-Portal2.md)
