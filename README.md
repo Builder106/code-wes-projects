@@ -1,24 +1,18 @@
-# Portal 2 — proposal email
+# Code-Wes Engineering Portfolio
 
-Email infrastructure for pitching a CS Club project: a hosted Portal 2 instance where one machine runs a licensed copy and everyone else participates through a browser (controls, queue, low-latency stream).
+This repository serves as a central engineering notebook and portfolio hub for the projects I build and lead as part of the **Code-Wes** Computer Science Club at Wesleyan University (2024–2026).
 
-This folder is **just the proposal email**, not the hosted-game system. The full system design lives in [`TODO-Portal2.md`](./TODO-Portal2.md) and hasn't been built yet.
+Rather than housing the actual production source code (which lives directly in the [Code-Wes GitHub Organization](https://github.com/Code-Wes)), this repository contains initial pitches, architectural design documents, prototypes, and the master engineering journal.
 
-## Files
+## Projects
 
-- `Portal2ProposalEmail.tsx` — React Email template (`@react-email/components`). The actual content of the pitch.
-- `Portal2ProposalEmail.html` — pre-rendered HTML preview of the template.
-- `render-email.ts` — renders the TSX template to HTML for previewing.
-- `send.tsx` / `send.js` — sends via [Resend](https://resend.com) (`RESEND_API_KEY` env var).
-- `send-smtp.js`, `transporter.js` — alternate path via Nodemailer/SMTP.
+### 1. [Portal 2 Web Bridge](https://github.com/Code-Wes/portal-web-bridge)
+**Status:** In Development
+Turning a live instance of Portal 2 into an interactive web server. By launching Portal 2 with the `-netconport` flag, this project uses a Fastify backend and a React frontend to allow a crowd of users to safely control the game over a low-latency stream.
+- Architecture and Milestones: [TODO-Portal2.md](./TODO-Portal2.md)
+- Original pitch email: [proposal-email/](./proposal-email/)
 
-## Send
+---
 
-```bash
-npm install
-RESEND_API_KEY=... node send.js          # via Resend (preferred)
-# or
-node send-smtp.js                         # via SMTP, see transporter.js
-```
-
-Configure recipient/sender in `send.js` before running.
+## License
+MIT License. See [LICENSE](./LICENSE).
