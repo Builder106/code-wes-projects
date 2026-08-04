@@ -1,12 +1,12 @@
 # Wesleyan University Clubs and Organizations
 
 | Name | Categories | Summary |
-|---|---|---|
+| --- | --- | --- |
 | Absent Toast | Performance & Visual Arts, Theater, Film / Photography | Wesleyan's shadow-cast screening of the Rocky Horror Picture Show, which performs biannually on the last day of classes each semester! |
 | African Students Association | Identity, Community Service, Program House, Social Justice, Social, Academic, Career | The African Students' Association at Wesleyan University seeks to encourage the unification of African students and students of African descent in the diaspora. We share the cultures and traditions of African nations and our experiences. |
 | Allbritton Center | | At The Allbritton Center for the Study of Public Life, our mission is to cultivate a dynamic community committed to the exploration, understanding, and advancement of public life. |
 | Alpha Delta Phi Society | Greek Life, Societies, Program House, Social | The Alpha Delta Phi is a gender inclusive literary society dedicate to developing character, scholarship, and enduring friendships. ADP owns the ADP House on 185 High Street, runs the Star & Crescent restaurant, and runs the Adelphic Educational Fund. |
-| Alumni and Parent Relations |  | Focused on greater participation and engagement to increase opportunities for success. |
+| Alumni and Parent Relations | | Focused on greater participation and engagement to increase opportunities for success. |
 | American Chemical Society Wesleyan Student Chapter | Community Service, Honor Society, Academic, Career | ACS Wes is in affiliation with the American Chemical Society. We participate in a variety of activities that will help students explore their interests and futures in the many fields of chemistry. |
 | American Civil Liberties Union | Activism, Community Service, Fundraising, Social Justice, Career, Politics | This college chapter of the ACLU will work alongside the American Civil Liberties Union of Connecticut on projects concerning LGBTQ+ Rights, Women's Rights, Voting Rights, Immigration, Police Accountability, Racial Justice, and Youth and Student Rights. |
 | American Medical Student Association | Community Service, Societies, Volunteer, Academic, Career | Here on Wesleyan's campus, it is our goal to create a supportive community of pre-health students, guided by upperclassmen and the pre-health advisors on campus. |
@@ -19,57 +19,57 @@
 | Astronomy Department | | The Wesleyan Astronomy Department provides outstanding opportunities for undergraduates who wish to major in this subject, either in preparation for graduate school or as an end in itself. |
 | Athletics | | <https://athletics.wesleyan.edu/> |
 | Awkward Silence | Performance & Visual Arts | Awkward Silence is Wesleyan's premier stand-up comedy club! The club is for all students and hopes to introduce students to the exciting world of writing and performing stand-up comedy. |
-| Bailey College of the Environment |  | The Bailey College of the Environment at Wesleyan University was created with a belief in the resilience of the human spirit and a desire to develop a long-term vision of human and ecosystem health. Our mission, simply stated: to change the world. |
+| Bailey College of the Environment | | The Bailey College of the Environment at Wesleyan University was created with a belief in the resilience of the human spirit and a desire to develop a long-term vision of human and ecosystem health. Our mission, simply stated: to change the world. |
 | Biology Department | | <https://www.wesleyan.edu/bio/> |
 | Bite the Hand | Identity, Publications, Social | Bite the Hand is the one and only FGLI-focused magazine and club at Wesleyan University. We cultivate a space where FGLI students can express themselves through the arts and commentary. |
 | Black Student Union: Ujamaa | Activism, Identity, Social Justice, Social | Ujamaa is Wesleyan University's Black Student Union. As a union, Ujamaa is committed to the exploration and celebration of Blackness and Black heritage. |
 | Black Undergraduate Medical Association | Identity, Community Service, Volunteer, Academic, Career | Aimed at students pursuing careers in the health sphere, particularly black students. Good science, research, and care require the representation of all people. Inequity is a symptom of an unjust society; we aim to confront our challenges head-on. |
 | Board Games Club | Gaming, Social | The purpose of this club is to provide a fun activity for people to meet new friends and socialize on weekends outside of partying. |
 | Cardinal Kids | Activism, Community Service, Volunteer, Academic | Cardinal Kids is a teaching collective run by Wesleyan students from all domains of campus life. Each teacher brings a unique set of skills, adapting their on-campus work and passions into fun, kid-friendly lessons. |
-| Cardinal Pictures | Performance & Visual Arts, Media, Social, Film / Photography, Career | Cardinal Pictures is a student-run organization which supports filmmaking on the Wesleyan campus. We provide interested students with film production training, funding, and equipment to realize their creative ambitions. We also foster a film community.  |
+| Cardinal Pictures | Performance & Visual Arts, Media, Social, Film / Photography, Career | Cardinal Pictures is a student-run organization which supports filmmaking on the Wesleyan campus. We provide interested students with film production training, funding, and equipment to realize their creative ambitions. We also foster a film community. |
 | Cardinal Players Pep Band | Performance & Visual Arts, Music | The Cardinal Players Pep Band is Wesleyan's very own student run pep band. The band plays at home football games, some away games, home basketball games, and other school spirit related events. |
-| Caribbean Students' Association  | Identity, Social | The Caribbean Students' Association aims to establish a supportive community for Caribbean students as well as anyone interested in Caribbean culture. The association also seeks to educate others about Caribbean culture through cultural activities. |
-| Center for Faculty Career Development |  | The Center for Faculty Career Development supports faculty scholarship, teaching, and colleagueship. We aim to cultivate a welcoming and inclusive campus community in which all of our students, faculty, and staff can thrive. |
-| Center for Jewish Studies |  | Minor in Jewish and Israel Studies |
-| Center for the Arts |  | Please visit our website at <https://www.wesleyan.edu/cfa> |
-| Center for the Humanities |  | One of the oldest humanities institutes in the United States, the Center for the Humanities at Wesleyan University supports innovative interdisciplinary academic programming, research, and scholarship. |
+| Caribbean Students' Association | Identity, Social | The Caribbean Students' Association aims to establish a supportive community for Caribbean students as well as anyone interested in Caribbean culture. The association also seeks to educate others about Caribbean culture through cultural activities. |
+| Center for Faculty Career Development | | The Center for Faculty Career Development supports faculty scholarship, teaching, and colleagueship. We aim to cultivate a welcoming and inclusive campus community in which all of our students, faculty, and staff can thrive. |
+| Center for Jewish Studies | | Minor in Jewish and Israel Studies |
+| Center for the Arts | | Please visit our website at <https://www.wesleyan.edu/cfa> |
+| Center for the Humanities | | One of the oldest humanities institutes in the United States, the Center for the Humanities at Wesleyan University supports innovative interdisciplinary academic programming, research, and scholarship. |
 | Chinese Cultural Club | Identity, Social | Chinese Culture Club is an organization that seeks to promote awareness and understanding about various aspects of Chinese culture. We hope to serve as a platform for learning, sharing, and collaborating. |
 | Citizens' Climate Lobby at Wesleyan University | Activism, Fundraising, Volunteer, Politics | We are a non-profit climate organization that is focused on advocating for national policies that address climate change. We are specifically focused on getting a national carbon fee and dividend passed into federal legislation. |
-| Class Deans |  | Class Deans are responsible for a comprehensive program of academic advising and class management in the context of a residential liberal arts environment. This includes helping students develop educational goals and complete their graduation requirement |
-| Classical Studies |  | Classical Studies offers a multidisciplinary approach to the civilizations of ancient Greece and Rome and the broader Mediterranean world, studying them in their original context and as avenues for modern inquiry. |
+| Class Deans | | Class Deans are responsible for a comprehensive program of academic advising and class management in the context of a residential liberal arts environment. This includes helping students develop educational goals and complete their graduation requirement |
+| Classical Studies | | Classical Studies offers a multidisciplinary approach to the civilizations of ancient Greece and Rome and the broader Mediterranean world, studying them in their original context and as avenues for modern inquiry. |
 | Code_Wes | Independent Projects, Social, Academic, Career | Club for students interested in coding. We're working on real-life group projects that include app, web, game development, and more. Join if you like coding! |
 | Collective Motion | Performance & Visual Arts, Dance | Collective Motion is a Wesleyan dance group for all levels that focuses on varied backgrounds in dance, including contemporary, modern, jazz, hip hop, and ballet. We put on a showcase at the end of each semester and run various dance workshops. |
-| College of Design and Engineering Studies |  | The College of Design & Engineering Studies (CoDES) challenges students to think broadly, make responsibly, and respond critically to the complex social, technological, cultural, and environmental conditions that surround them.  |
-| College of East Asian Studies |  | <https://www.wesleyan.edu/ceas/> |
-| College of Education Studies |  | The Education Studies academic program is designed to help students acquire a deeper understanding of education and its relationship to society.  |
-| College of Integrative Sciences |  | The College of Integrative Sciences (CIS) is an umbrella program for all natural science and mathematics disciplines at Wesleyan. We are focused on research, an interdisciplinary and integrative approach to learning, and collaboration across disciplines  |
-| College of Social Studies |  | The College of Social Studies (CSS) is a rigorous, multidisciplinary major focusing on History, Government, Political and Social Theory, and Economics.  |
-| Competitive Club Badminton | Club Sports | This club is for people who wish to compete in future badminton competitions in the area as well as the Eastern Badminton Collegiate Championship.  |
+| College of Design and Engineering Studies | | The College of Design & Engineering Studies (CoDES) challenges students to think broadly, make responsibly, and respond critically to the complex social, technological, cultural, and environmental conditions that surround them. |
+| College of East Asian Studies | | <https://www.wesleyan.edu/ceas/> |
+| College of Education Studies | | The Education Studies academic program is designed to help students acquire a deeper understanding of education and its relationship to society. |
+| College of Integrative Sciences | | The College of Integrative Sciences (CIS) is an umbrella program for all natural science and mathematics disciplines at Wesleyan. We are focused on research, an interdisciplinary and integrative approach to learning, and collaboration across disciplines |
+| College of Social Studies | | The College of Social Studies (CSS) is a rigorous, multidisciplinary major focusing on History, Government, Political and Social Theory, and Economics. |
+| Competitive Club Badminton | Club Sports | This club is for people who wish to compete in future badminton competitions in the area as well as the Eastern Badminton Collegiate Championship. |
 | Concert Committee | Music | The Concert Committee, funded by the WSA, organizes Spring Fling and collaborates with students to bring musical acts to campus. |
 | Consulting Pathways | Academic, Career | Consulting Pathways provides networking, case interview, and industry resources to support Wesleyan students who are interested in pursuing a career in management consulting. |
-| Continuing Studies |  | Continuing Studies extends Wesleyan’s liberal arts experience beyond residential student experiences through Graduate Liberal Studies, the Bachelor of Liberal Studies, and undergraduate Summer Session and Winter Session courses. |
-| Controller's Office / Finance  |  | Please visit the Wesleyan website for our full mission statement.
+| Continuing Studies | | Continuing Studies extends Wesleyan’s liberal arts experience beyond residential student experiences through Graduate Liberal Studies, the Bachelor of Liberal Studies, and undergraduate Summer Session and Winter Session courses. |
+| Controller's Office / Finance | | Please visit the Wesleyan website for our full mission statement.
  <https://www.wesleyan.edu/> |
-| Costume Shop / Theater Department  |  | Please visit our website for our department mission statement:
+| Costume Shop / Theater Department | | Please visit our website for our department mission statement:
  <https://www.wesleyan.edu/theater/index.html> |
-| Counseling and Psychological Services |  | CAPS provides comprehensive short-term mental health services through multidisciplinary integration with Davison Health Center and WesWell. |
-| Davison Art Collection |  | Wesleyan's Davison Art Collection is focused primarily on graphic art and photography.
+| Counseling and Psychological Services | | CAPS provides comprehensive short-term mental health services through multidisciplinary integration with Davison Health Center and WesWell. |
+| Davison Art Collection | | Wesleyan's Davison Art Collection is focused primarily on graphic art and photography.
   |
-| Davison Health Center |  | The Davison Health Center provides an array of services for Wesleyan students. |
-| Dean of Students  |  | In support of the University's academic mission, the dean of students office oversees a variety of services and programs relating to the students' co-curricular experience.  |
+| Davison Health Center | | The Davison Health Center provides an array of services for Wesleyan students. |
+| Dean of Students | | In support of the University's academic mission, the dean of students office oversees a variety of services and programs relating to the students' co-curricular experience. |
 | Delta Kappa Epsilon | Greek Life | Delta Kappa Epsilon is a members-only social fraternity founded at Yale University in 1844. Our fraternity cultivates in its members the three qualities of a true ∆KE: the gentleman, the scholar, and the jolly good fellow—which we uphold religiously. |
-| Desperate Measures Improv Comedy  | Performance & Visual Arts | Desperate Measures (DM) is Wesleyan's only short-form and long-form improv group. We were founded in 1994 and have remained a prominent presence in the on-campus comedy scene ever since. We perform around 4 times a semester, including the 24-hour show. |
-| Disengineering Society | Activism, Independent Projects, Performance & Visual Arts, Music, Academic | This club engages in the preservation of Wesleyan's legacy of experimental electronic music composition and research by creating a space to work together to hack hardware and software and of course e-waste, for musical repurposing and re-engineering.  |
-| Disorientation | Activism, Identity, Independent Projects, Community Service, Publications, Media, Volunteer, Social Justice, Social, Politics | Since its inception in the 70's, this zine has highlighted the perspectives of students who aren't included within the mainstream communication of the university. We aim to start discussion about issues, generate support systems, and create action.  |
+| Desperate Measures Improv Comedy | Performance & Visual Arts | Desperate Measures (DM) is Wesleyan's only short-form and long-form improv group. We were founded in 1994 and have remained a prominent presence in the on-campus comedy scene ever since. We perform around 4 times a semester, including the 24-hour show. |
+| Disengineering Society | Activism, Independent Projects, Performance & Visual Arts, Music, Academic | This club engages in the preservation of Wesleyan's legacy of experimental electronic music composition and research by creating a space to work together to hack hardware and software and of course e-waste, for musical repurposing and re-engineering. |
+| Disorientation | Activism, Identity, Independent Projects, Community Service, Publications, Media, Volunteer, Social Justice, Social, Politics | Since its inception in the 70's, this zine has highlighted the perspectives of students who aren't included within the mainstream communication of the university. We aim to start discussion about issues, generate support systems, and create action. |
 | Eight to Eight Student Listening Service | Community Service, Volunteer, Social | Founded in 1977, 8-to-8 is a student-run, confidential and anonymous listening service. Either by phone, or in an online chat, we provide the Wesleyan community with non-directive listening and useful information to help them deal with their problems. |
-| Environmental Services |  | The Environmental Services department provides the leadership to promote a safe and environmentally responsible campus. We provide safety training, inspections of properties for environmental impact, monitoring and review of permit-required activities in |
+| Environmental Services | | The Environmental Services department provides the leadership to promote a safe and environmentally responsible campus. We provide safety training, inspections of properties for environmental impact, monitoring and review of permit-required activities in |
 | Environmental Solidarity Network | Activism, Community Service, Volunteer, Social Justice | The Environmental Solidarity Network is a student-led platform for collaboration, communication, and advocacy on sustainability and environmentally focused issues at Wesleyan and in the greater community. |
 | Espwesso: Wesleyan's Student-Run Cafe | Independent Projects, Community Service, Performance & Visual Arts, Social Justice, Social | Espwesso is a cafe run by students for the Wesleyan community, serving premium coffee, espresso drinks, tea and more. The cafe's supply chain and coffee preparation supports economic and environmental sustainability in a number of industries. Founded i... |
-| Facilities  |  | <https://www.wesleyan.edu/facilities/>
+| Facilities | | <https://www.wesleyan.edu/facilities/>
   |
-| FGLI Advisory Board | Activism, Identity, Community Service, Social Justice | Supporting students at Wesleyan University displaced or otherwise concerned for their financial well-being.  |
+| FGLI Advisory Board | Activism, Identity, Community Service, Social Justice | Supporting students at Wesleyan University displaced or otherwise concerned for their financial well-being. |
 | Fighting Pretty at Wesleyan University | Independent Projects, Fundraising, Philanthropy | Fighting Pretty at Wesleyan University is a student ambassador group of the national nonprofit Fighting Pretty, helping all women battling cancer to feel strong, beautiful, and connected by spreading awareness, fundraising, and donating care packages. |
-| Financial Aid |  | Please visit our website for our mission statement:
+| Financial Aid | | Please visit our website for our mission statement:
 
  <https://www.wesleyan.edu/finaid/> |
 | Fray Magazine | Independent Projects, Performance & Visual Arts, Media, Film / Photography | Fashion Publication |

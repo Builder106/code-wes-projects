@@ -5,6 +5,7 @@ Main goal: One licensed Portal 2 host runs with `-netconport`; everyone else par
 ---
 
 ### Guardrails
+
 - [ ] Legal: Use a legitimate Steam license for any machine running Portal 2 (no repacks).
 - [ ] Accessibility: Browser-only for participants; only the host needs Steam.
 - [ ] Dual deploy: Support both self‑hosted and cloud VM setups.
@@ -14,6 +15,7 @@ Main goal: One licensed Portal 2 host runs with `-netconport`; everyone else par
 ---
 
 ### Milestone 0 — Planning & TDD Setup
+
 - [ ] Decide hosting path: self‑hosted GPU PC vs. cloud GPU VM (G4/G5/A10).
 - [ ] Pick stack: Backend (Node/Fastify or Python/FastAPI), Frontend (React/Svelte), DB (Redis for queue/ratelimit; Postgres optional).
 - [ ] Draft OpenAPI contract for control API (actions, schemas, errors, auth).
@@ -23,6 +25,7 @@ Main goal: One licensed Portal 2 host runs with `-netconport`; everyone else par
 - [ ] CI setup: lint, typecheck, test; precommit hooks.
 
 Tests (write first)
+
 - [ ] Contract tests for each endpoint (happy paths + all error codes).
 - [ ] Validation tests for each action schema (range clamps, enums, coordinates).
 - [ ] E2E skeleton with mocked netcon + mocked stream (Playwright/Cypress).
@@ -31,7 +34,9 @@ Tests (write first)
 ---
 
 ### Milestone 1 — Host Machine/VM
+
 Self‑hosted
+
 - [ ] Provision a GPU PC (Windows or Linux) with updated GPU drivers.
 - [ ] Install Steam + Portal 2; sign in with licensed account.
 Cloud
@@ -41,6 +46,7 @@ Common
 - [ ] Verify Portal 2 launches with network console enabled.
 
 Example (Windows Steam launch options)
+
 ```text
 -console -netconport 2121
 ```
@@ -51,7 +57,9 @@ Example (Windows Steam launch options)
 ---
 
 ### Milestone 2 — Low‑Latency Streaming
+
 Option A (self‑hosted): Sunshine → WebRTC client
+
 - [ ] Install Sunshine; configure 1080p/60, NVENC low‑latency preset, 8–12 Mbps.
 - [ ] Enable Sunshine WebRTC web client; obtain viewer URL.
 Option B (cloud): NICE DCV (browser client) or Parsec (native)
@@ -63,6 +71,7 @@ Common
 ---
 
 ### Milestone 3 — Network Exposure & TLS
+
 - [ ] Domain/DNS (e.g., `portal2.club.example`).
 - [ ] Reverse proxy (Caddy/NGINX) with HTTPS and HSTS.
 - [ ] Tunnel (Cloudflare Tunnel or Tailscale Funnel) for NAT‑safe public access.
@@ -72,10 +81,13 @@ Common
 ---
 
 ### Milestone 4 — Backend (HTTP → netcon bridge)
+
 Scaffold (Bolt.new)
+
 - [ ] Generate project with tests, OpenAPI, and typed schemas.
 
 Features (implement after tests)
+
 - [ ] TCP client to `-netconport` with reconnect/backoff.
 - [ ] Allowlisted actions → console command templates (no freeform by default).
 - [ ] Schema validation (e.g., zod/pydantic) with strict ranges/clamps.
@@ -88,6 +100,7 @@ Features (implement after tests)
 - [ ] Packaging: systemd or Docker; env‑config; secrets via file/manager.
 
 Tests
+
 - [ ] Unit: netcon parser, reconnect logic, action mappers.
 - [ ] Integration: queue ordering, ratelimit, idempotency, error propagation.
 - [ ] Contract: OpenAPI conformance (request/response, errors).
@@ -96,10 +109,13 @@ Tests
 ---
 
 ### Milestone 5 — Frontend (Browser UI)
+
 Scaffold
+
 - [ ] SPA with routing, state, WebSocket client, and component library (accessible).
 
 Features
+
 - [ ] OAuth login (GitHub/Google) → JWT; roles: viewer, participant, admin.
 - [ ] Stream embed component with latency + status overlay.
 - [ ] Controls: buttons/sliders mapped to actions; disabled on cooldown.
@@ -109,6 +125,7 @@ Features
 - [ ] Mobile layout: touch‑safe controls; responsive stream.
 
 Tests
+
 - [ ] Unit: form validation, cooldown timers, WebSocket reducers.
 - [ ] E2E: join → queue → execute → visual ack; mocked stream/netcon.
 - [ ] Accessibility: keyboard nav, ARIA roles, contrast, focus traps.
@@ -116,6 +133,7 @@ Tests
 ---
 
 ### Milestone 6 — Security & Safety
+
 - [ ] Command sandbox: explicit allowlist; block dangerous commands by default.
 - [ ] Server‑side validation; clamp coordinates and numeric ranges.
 - [ ] RBAC enforcement; per‑role quotas; audit trail with hashed args.
@@ -126,6 +144,7 @@ Tests
 ---
 
 ### Milestone 7 — Testing & SLOs
+
 - [ ] Define SLOs: API p95 < 200 ms (local), command exec < 2 s, stream latency < 250 ms.
 - [ ] k6 load tests: 50 concurrent users clicking every 2–5 s.
 - [ ] Security tests: attempt disallowed actions, malformed payloads → 4xx.
@@ -135,6 +154,7 @@ Tests
 ---
 
 ### Milestone 8 — Ops & Runbooks
+
 - [ ] Deploy scripts (start/stop/restart), versioned config, rollback plan.
 - [ ] Incident runbook: stream black screen, netcon disconnects, queue jam.
 - [ ] Metrics dashboard + alerts for queue depth, error rate, reconnects.
@@ -144,6 +164,7 @@ Tests
 ---
 
 ### Milestone 9 — Docs, Demo, and Onboarding
+
 - [ ] Quickstart for participants (browser‑only): URL, controls, etiquette.
 - [ ] Contributor guide (branching, testing, linting, PR checks).
 - [ ] Architecture diagram and sequence of a command.
@@ -153,6 +174,7 @@ Tests
 ---
 
 ### Acceptance Criteria (MVP)
+
 - [ ] Participants join via browser, see live stream, and authenticate.
 - [ ] Users can trigger 3+ safe actions (e.g., spawn cube, toggle light, move platform).
 - [ ] Actions are queued, rate‑limited, and logged with user attribution.
@@ -162,6 +184,7 @@ Tests
 ---
 
 ### Nice‑to‑Haves
+
 - [ ] Turn‑taking mode (round‑robin queue).
 - [ ] Replay safe macros; shareable command presets.
 - [ ] “DOM to cubes” showcase parser behind a feature flag.
@@ -170,6 +193,7 @@ Tests
 ---
 
 ### Notes & References
+
 - Portal 2 network console: launch with `-console -netconport <port>`.
 - Streaming options: Sunshine (self‑hosted, WebRTC), NICE DCV (cloud, browser), Parsec (native).
 - Follow TDD and scaffold with Bolt.new rather than coding from scratch.
