@@ -39,10 +39,14 @@ Self‑hosted
 
 - [ ] Provision a GPU PC (Windows or Linux) with updated GPU drivers.
 - [ ] Install Steam + Portal 2; sign in with licensed account.
+
 Cloud
+
 - [ ] Provision GPU VM (e.g., AWS G5/RTX A10) with inbound security groups set.
 - [ ] Install NVIDIA drivers; enable H.264 NVENC.
+
 Common
+
 - [ ] Verify Portal 2 launches with network console enabled.
 
 Example (Windows Steam launch options)
@@ -62,9 +66,13 @@ Option A (self‑hosted): Sunshine → WebRTC client
 
 - [ ] Install Sunshine; configure 1080p/60, NVENC low‑latency preset, 8–12 Mbps.
 - [ ] Enable Sunshine WebRTC web client; obtain viewer URL.
+
 Option B (cloud): NICE DCV (browser client) or Parsec (native)
+
 - [ ] Install DCV server; enable browser access; tune encoder and input latency.
+
 Common
+
 - [ ] Measure glass‑to‑glass latency; target < 200 ms.
 - [ ] Provide a test page embedding the stream; show FPS/RTT overlay.
 

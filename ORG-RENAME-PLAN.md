@@ -4,7 +4,7 @@ The `Code-Wes` GitHub organization currently suffers from redundant naming conve
 
 ## The Problem
 
-Because the organization itself is already named `Code-Wes`, including `code_wes` in the repository names leads to highly redundant URLs (e.g., `github.com/Code-Wes/code_wes_website`).
+Because the organization itself is already named `Code-Wes`, including `code_wes`in the repository names leads to highly redundant URLs (e.g.,`github.com/Code-Wes/code_wes_website`).
 
 Additionally, the repos currently use three different casing styles:
 
@@ -22,7 +22,7 @@ If you have admin access to the `Code-Wes` organization, go to the **Settings** 
 
 | Current Name | Proposed Name | Resulting URL |
 | --- | --- | --- |
-| `Code_Wes_Introduction` | `introduction` (or `member-onboarding`) | `github.com/Code-Wes/introduction` |
+| `Code_Wes_Introduction` | `introduction`(or`member-onboarding`) | `github.com/Code-Wes/introduction` |
 | `code_wes_website` | `website` | `github.com/Code-Wes/website` |
 | `weshack-2024` | *(No change needed)* | `github.com/Code-Wes/weshack-2024` |
-| `Portal 2` (Local) | `portal-web-bridge` | `github.com/Code-Wes/portal-web-bridge` |
+| `Portal 2`(Local) | `portal-web-bridge` | `github.com/Code-Wes/portal-web-bridge` |
