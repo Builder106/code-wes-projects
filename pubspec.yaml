@@ -50,18 +50,10 @@ flutter:
   fonts:
     - family: CormorantGaramond
       fonts:
-        - asset: assets/fonts/CormorantGaramond-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/CormorantGaramond-Bold.ttf
-          weight: 700
+        - asset: assets/fonts/CormorantGaramond.ttf
     - family: IBMPlexSans
       fonts:
-        - asset: assets/fonts/IBMPlexSans-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/IBMPlexSans-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/IBMPlexSans-SemiBold.ttf
-          weight: 600
+        - asset: assets/fonts/IBMPlexSans.ttf
     - family: Bravura
       fonts:
         - asset: assets/fonts/Bravura.otf

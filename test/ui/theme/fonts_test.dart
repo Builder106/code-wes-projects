@@ -6,11 +6,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const expected = [
-    'assets/fonts/CormorantGaramond-SemiBold.ttf',
-    'assets/fonts/CormorantGaramond-Bold.ttf',
-    'assets/fonts/IBMPlexSans-Regular.ttf',
-    'assets/fonts/IBMPlexSans-Medium.ttf',
-    'assets/fonts/IBMPlexSans-SemiBold.ttf',
+    'assets/fonts/CormorantGaramond.ttf',
+    'assets/fonts/IBMPlexSans.ttf',
     'assets/fonts/Bravura.otf',
   ];
 
@@ -34,5 +31,14 @@ void main() {
       expect(paragraph.maxIntrinsicWidth, greaterThan(0),
           reason: 'glyph U+${code.toRadixString(16).toUpperCase()} missing');
     }
+  });
+
+  test('IBMPlexSans exposes a variable weight axis', () async {
+    final data = await rootBundle.load('assets/fonts/IBMPlexSans.ttf');
+    final bytes = data.buffer.asUint8List();
+    // 'fvar' table tag in the font directory.
+    final hasFvar = String.fromCharCodes(bytes.sublist(0, 4096))
+        .contains('fvar');
+    expect(hasFvar, isTrue);
   });
 }
