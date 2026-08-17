@@ -1,0 +1,271 @@
+import 'dart:convert';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:riverpod/riverpod.dart';
+import '../models/level_models.dart';
+
+/// Repository for loading and managing levels/stages
+class LevelRepository {
+  final Map<String, StageModel> _stages = {};
+  final Map<String, LevelModel> _levels = {};
+
+  LevelRepository() {
+    _loadBuiltInLevels();
+  }
+
+  /// Load all levels from assets
+  Future<void> loadAll() async {
+    try {
+      final manifestJson = await rootBundle.loadString('assets/levels/manifest.json');
+      final manifest = jsonDecode(manifestJson) as Map<String, dynamic>;
+
+      for (final entry in manifest.entries) {
+        final levelPath = 'assets/levels/${entry.value}';
+        final levelJson = await rootBundle.loadString(levelPath);
+        final levelData = jsonDecode(levelJson) as Map<String, dynamic>;
+        final level = LevelModel.fromJson(levelData);
+        _levels[level.id] = level;
+      }
+
+      // Load stages
+      final stagesJson = await rootBundle.loadString('assets/levels/stages.json');
+      final stagesData = jsonDecode(stagesJson) as List<dynamic>;
+      for (final stageData in stagesData) {
+        final stage = StageModel.fromJson(stageData as Map<String, dynamic>);
+        _stages[stage.id] = stage;
+      }
+    } catch (e) {
+      // Fallback to built-in levels if assets not found
+      _loadBuiltInLevels();
+    }
+  }
+
+  /// Load built-in levels as fallback
+  void _loadBuiltInLevels() {
+    // Level 1: Simple C Major Scale
+    final level1 = LevelModel(
+      id: 'level_1',
+      title: 'C Major Scale',
+      description: 'Learn the C major scale with quarter notes',
+      tempo: 80,
+      beatsPerMeasure: 4,
+      totalMeasures: 4,
+      measures: [
+        LevelMeasure(
+          index: 0,
+          startBeat: 0,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 60, startBeat: 0, durationBeats: 1, measureIndex: 0, beatIndex: 0), // C4
+            LevelNote(midiNote: 62, startBeat: 1, durationBeats: 1, measureIndex: 0, beatIndex: 1), // D4
+            LevelNote(midiNote: 64, startBeat: 2, durationBeats: 1, measureIndex: 0, beatIndex: 2), // E4
+            LevelNote(midiNote: 65, startBeat: 3, durationBeats: 1, measureIndex: 0, beatIndex: 3), // F4
+          ],
+        ),
+        LevelMeasure(
+          index: 1,
+          startBeat: 4,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 67, startBeat: 4, durationBeats: 1, measureIndex: 1, beatIndex: 0), // G4
+            LevelNote(midiNote: 69, startBeat: 5, durationBeats: 1, measureIndex: 1, beatIndex: 1), // A4
+            LevelNote(midiNote: 71, startBeat: 6, durationBeats: 1, measureIndex: 1, beatIndex: 2), // B4
+            LevelNote(midiNote: 72, startBeat: 7, durationBeats: 1, measureIndex: 1, beatIndex: 3), // C5
+          ],
+        ),
+        LevelMeasure(
+          index: 2,
+          startBeat: 8,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 72, startBeat: 8, durationBeats: 1, measureIndex: 2, beatIndex: 0), // C5
+            LevelNote(midiNote: 71, startBeat: 9, durationBeats: 1, measureIndex: 2, beatIndex: 1), // B4
+            LevelNote(midiNote: 69, startBeat: 10, durationBeats: 1, measureIndex: 2, beatIndex: 2), // A4
+            LevelNote(midiNote: 67, startBeat: 11, durationBeats: 1, measureIndex: 2, beatIndex: 3), // G4
+          ],
+        ),
+        LevelMeasure(
+          index: 3,
+          startBeat: 12,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 65, startBeat: 12, durationBeats: 1, measureIndex: 3, beatIndex: 0), // F4
+            LevelNote(midiNote: 64, startBeat: 13, durationBeats: 1, measureIndex: 3, beatIndex: 1), // E4
+            LevelNote(midiNote: 62, startBeat: 14, durationBeats: 1, measureIndex: 3, beatIndex: 2), // D4
+            LevelNote(midiNote: 60, startBeat: 15, durationBeats: 1, measureIndex: 3, beatIndex: 3), // C4
+          ],
+        ),
+      ],
+    );
+
+    // Level 2: Simple melody with half notes
+    final level2 = LevelModel(
+      id: 'level_2',
+      title: 'Ode to Joy (Excerpt)',
+      description: 'Play the famous melody with half and quarter notes',
+      tempo: 90,
+      beatsPerMeasure: 4,
+      totalMeasures: 4,
+      measures: [
+        LevelMeasure(
+          index: 0,
+          startBeat: 0,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 64, startBeat: 0, durationBeats: 1, measureIndex: 0, beatIndex: 0), // E4
+            LevelNote(midiNote: 64, startBeat: 1, durationBeats: 1, measureIndex: 0, beatIndex: 1), // E4
+            LevelNote(midiNote: 65, startBeat: 2, durationBeats: 1, measureIndex: 0, beatIndex: 2), // F4
+            LevelNote(midiNote: 67, startBeat: 3, durationBeats: 1, measureIndex: 0, beatIndex: 3), // G4
+          ],
+        ),
+        LevelMeasure(
+          index: 1,
+          startBeat: 4,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 67, startBeat: 4, durationBeats: 1, measureIndex: 1, beatIndex: 0), // G4
+            LevelNote(midiNote: 65, startBeat: 5, durationBeats: 1, measureIndex: 1, beatIndex: 1), // F4
+            LevelNote(midiNote: 64, startBeat: 6, durationBeats: 1, measureIndex: 1, beatIndex: 2), // E4
+            LevelNote(midiNote: 62, startBeat: 7, durationBeats: 1, measureIndex: 1, beatIndex: 3), // D4
+          ],
+        ),
+        LevelMeasure(
+          index: 2,
+          startBeat: 8,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 60, startBeat: 8, durationBeats: 1, measureIndex: 2, beatIndex: 0), // C4
+            LevelNote(midiNote: 60, startBeat: 9, durationBeats: 1, measureIndex: 2, beatIndex: 1), // C4
+            LevelNote(midiNote: 62, startBeat: 10, durationBeats: 1, measureIndex: 2, beatIndex: 2), // D4
+            LevelNote(midiNote: 64, startBeat: 11, durationBeats: 1, measureIndex: 2, beatIndex: 3), // E4
+          ],
+        ),
+        LevelMeasure(
+          index: 3,
+          startBeat: 12,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 64, startBeat: 12, durationBeats: 2, measureIndex: 3, beatIndex: 0), // E4 (half)
+            LevelNote(midiNote: 62, startBeat: 14, durationBeats: 2, measureIndex: 3, beatIndex: 2), // D4 (half)
+          ],
+        ),
+      ],
+    );
+
+    // Level 3: Mixed rhythms
+    final level3 = LevelModel(
+      id: 'level_3',
+      title: 'Mixed Rhythms',
+      description: 'Practice quarter, half, and eighth notes',
+      tempo: 70,
+      beatsPerMeasure: 4,
+      totalMeasures: 4,
+      measures: [
+        LevelMeasure(
+          index: 0,
+          startBeat: 0,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 60, startBeat: 0, durationBeats: 2, measureIndex: 0, beatIndex: 0), // C4 half
+            LevelNote(midiNote: 64, startBeat: 2, durationBeats: 1, measureIndex: 0, beatIndex: 2), // E4 quarter
+            LevelNote(midiNote: 67, startBeat: 3, durationBeats: 0.5, measureIndex: 0, beatIndex: 3), // G4 eighth
+            LevelNote(midiNote: 72, startBeat: 3.5, durationBeats: 0.5, measureIndex: 0, beatIndex: 3), // C5 eighth
+          ],
+        ),
+        LevelMeasure(
+          index: 1,
+          startBeat: 4,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 72, startBeat: 4, durationBeats: 0.5, measureIndex: 1, beatIndex: 0), // C5 eighth
+            LevelNote(midiNote: 67, startBeat: 4.5, durationBeats: 0.5, measureIndex: 1, beatIndex: 0), // G4 eighth
+            LevelNote(midiNote: 65, startBeat: 5, durationBeats: 1, measureIndex: 1, beatIndex: 1), // F4 quarter
+            LevelNote(midiNote: 64, startBeat: 6, durationBeats: 2, measureIndex: 1, beatIndex: 2), // E4 half
+          ],
+        ),
+        LevelMeasure(
+          index: 2,
+          startBeat: 8,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 62, startBeat: 8, durationBeats: 0.5, measureIndex: 2, beatIndex: 0), // D4 eighth
+            LevelNote(midiNote: 64, startBeat: 8.5, durationBeats: 0.5, measureIndex: 2, beatIndex: 0), // E4 eighth
+            LevelNote(midiNote: 65, startBeat: 9, durationBeats: 0.5, measureIndex: 2, beatIndex: 1), // F4 eighth
+            LevelNote(midiNote: 67, startBeat: 9.5, durationBeats: 0.5, measureIndex: 2, beatIndex: 1), // G4 eighth
+            LevelNote(midiNote: 69, startBeat: 10, durationBeats: 1, measureIndex: 2, beatIndex: 2), // A4 quarter
+            LevelNote(midiNote: 67, startBeat: 11, durationBeats: 1, measureIndex: 2, beatIndex: 3), // G4 quarter
+          ],
+        ),
+        LevelMeasure(
+          index: 3,
+          startBeat: 12,
+          beatsPerMeasure: 4,
+          notes: [
+            LevelNote(midiNote: 65, startBeat: 12, durationBeats: 2, measureIndex: 3, beatIndex: 0), // F4 half
+            LevelNote(midiNote: 60, startBeat: 14, durationBeats: 2, measureIndex: 3, beatIndex: 2), // C4 half
+          ],
+        ),
+      ],
+    );
+
+    _levels[level1.id] = level1;
+    _levels[level2.id] = level2;
+    _levels[level3.id] = level3;
+
+    // Create stages
+    _stages['stage_1'] = StageModel(
+      id: 'stage_1',
+      title: 'C Major Scale',
+      description: 'Learn the C major scale with quarter notes',
+      difficulty: Difficulty.beginner,
+      level: level1,
+      order: 1,
+      xpReward: 100,
+    );
+
+    _stages['stage_2'] = StageModel(
+      id: 'stage_2',
+      title: 'Ode to Joy',
+      description: 'Play the famous melody with half and quarter notes',
+      difficulty: Difficulty.beginner,
+      level: level2,
+      order: 2,
+      prerequisites: ['stage_1'],
+      xpReward: 150,
+    );
+
+    _stages['stage_3'] = StageModel(
+      id: 'stage_3',
+      title: 'Mixed Rhythms',
+      description: 'Practice quarter, half, and eighth notes',
+      difficulty: Difficulty.intermediate,
+      level: level3,
+      order: 3,
+      prerequisites: ['stage_2'],
+      xpReward: 200,
+    );
+  }
+
+  /// Get a level by ID
+  LevelModel? getLevel(String id) => _levels[id];
+
+  /// Get a stage by ID
+  StageModel? getStage(String id) => _stages[id];
+
+  /// Get all stages in order
+  List<StageModel> getAllStages() {
+    final stages = _stages.values.toList();
+    stages.sort((a, b) => a.order.compareTo(b.order));
+    return stages;
+  }
+
+  /// Get all levels
+  List<LevelModel> getAllLevels() => _levels.values.toList();
+}
+
+/// Riverpod provider for the level repository
+final levelRepositoryProvider = Provider<LevelRepository>((ref) {
+  final repo = LevelRepository();
+  // Load asynchronously
+  repo.loadAll();
+  return repo;
+});
