@@ -33,10 +33,6 @@ final audioGrantedProvider = FutureProvider<bool>((ref) async {
 final audioPitchStreamProvider = StreamProvider<PitchEvent>(
     (ref) => ref.watch(audioEngineProvider).pitchStream);
 
-/// Alias kept for call sites that read microphone state by its UI-facing
-/// name rather than the underlying grant check.
-final micPermissionProvider = audioGrantedProvider;
-
 /// Everything the practice screen can show, in one immutable value.
 class StageUiState {
   const StageUiState({
@@ -101,6 +97,19 @@ class StageController extends StateNotifier<StageUiState> {
   final ProgressRepository _progress;
   StreamSubscription<StageEvent>? _sub;
 
+  /// The engine's own event stream, exposed so the screen can react to the
+  /// same completion signal that [_onEvent] already uses to write progress,
+  /// rather than inventing a second way to detect it.
+  Stream<StageEvent> get events => _engine.events;
+
+  /// One decay timer per lit key. [PitchDetector] only emits an event while
+  /// it hears a pitch -- silence produces nothing -- so without a decay a
+  /// note would stay lit forever once heard once. Each detection of a note
+  /// resets its own timer; if the note is not heard again within the decay
+  /// window, it drops out of [StageUiState.sounding].
+  final Map<int, Timer> _soundingTimers = {};
+  static const Duration _soundingDecay = Duration(milliseconds: 350);
+
   static const double minSpeed = 0.5;
   static const double maxSpeed = 2.0;
 
@@ -113,6 +122,8 @@ class StageController extends StateNotifier<StageUiState> {
   void pause() {
     _engine.pause();
     _sync();
+    // A paused transport should not show a lit key either.
+    _clearSounding();
   }
 
   void resume() {
@@ -125,7 +136,7 @@ class StageController extends StateNotifier<StageUiState> {
     _engine.stop();
     _sync();
     // Nothing is being listened for once stopped, so no key should stay lit.
-    state = state.copyWith(sounding: const {});
+    _clearSounding();
   }
 
   /// A detected pitch both scores against the level and lights the keyboard.
@@ -138,8 +149,28 @@ class StageController extends StateNotifier<StageUiState> {
   void onPitch(PitchEvent event) {
     if (state.status != StageEngineStatus.playing) return;
     _engine.processPitchEvent(event);
-    state = state.copyWith(sounding: {event.midiNote});
+
+    final note = event.midiNote;
+    _soundingTimers[note]?.cancel();
+    _soundingTimers[note] = Timer(_soundingDecay, () => _dropSounding(note));
+    state = state.copyWith(sounding: {...state.sounding, note});
     _sync();
+  }
+
+  /// Drops a single note out of [StageUiState.sounding] once its decay timer
+  /// fires without a fresh detection refreshing it.
+  void _dropSounding(int note) {
+    _soundingTimers.remove(note);
+    if (!state.sounding.contains(note)) return;
+    state = state.copyWith(sounding: {...state.sounding}..remove(note));
+  }
+
+  void _clearSounding() {
+    for (final timer in _soundingTimers.values) {
+      timer.cancel();
+    }
+    _soundingTimers.clear();
+    state = state.copyWith(sounding: const {});
   }
 
   /// Returns to the start and plays again.
@@ -180,6 +211,10 @@ class StageController extends StateNotifier<StageUiState> {
 
   @override
   void dispose() {
+    for (final timer in _soundingTimers.values) {
+      timer.cancel();
+    }
+    _soundingTimers.clear();
     _sub?.cancel();
     _engine.dispose();
     super.dispose();
@@ -216,7 +251,7 @@ final stageControllerProvider =
       score: 0,
       accuracy: 0,
       status: engine.state.engineState,
-      speed: 1.0,
+      speed: engine.playbackSpeed,
     ),
   );
 

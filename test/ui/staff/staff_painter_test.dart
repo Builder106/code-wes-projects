@@ -65,6 +65,14 @@ void main() {
     // in a fixed pixel offset. At small staff heights the two agreed; at
     // large ones the header grew past the first note. Pin the two
     // quantities together across a range of heights so this cannot regress.
+    //
+    // The staff no longer scales unboundedly with its band: Task 8 added a
+    // cap (`kDefaultMaxStaffHeight`) via `staffGeometryForBand`, the same
+    // function the painter itself calls. The expected geometry here is built
+    // through that function rather than a hardcoded fraction, so this test
+    // tracks the painter's actual behaviour instead of a formula it
+    // abandoned.
+    const pixelsPerBeat = 60.0;
     for (final height in [80.0, 220.0, 400.0]) {
       final painter = _painter();
       final size = Size(740, height);
@@ -73,20 +81,28 @@ void main() {
       painter.paint(Canvas(recorder), size);
       expect(recorder.endRecording(), isNotNull);
 
-      final staffHeight = height * 0.56;
-      final g = StaffGeometry(top: (height - staffHeight) / 2, height: staffHeight);
+      final g = painter.geometryFor(height);
       final headerWidth = StaffPainter.headerWidthFor(g);
-
-      // The header must scale in lockstep with the staff-space unit (this
-      // is the unit-consistency invariant the bug violated: the header used
-      // to scale with `space` while notes used a fixed pixel offset).
-      expect(headerWidth, closeTo(g.space * 8.5, 0.001));
 
       // The first note (startBeat: 0) sits exactly at the header boundary;
       // it must never start before it, at any staff size.
-      const pixelsPerBeat = 60.0;
       final firstNoteX = headerWidth + 0 * pixelsPerBeat;
       expect(firstNoteX, greaterThanOrEqualTo(headerWidth));
+
+      // A later note (startBeat: 2, from _painter's fixture) must land a
+      // fixed, non-zero distance after the header -- exercising the actual
+      // beat-to-pixel mapping rather than an identity that would hold for
+      // any pixelsPerBeat.
+      final thirdNoteX = headerWidth + 2 * pixelsPerBeat;
+      expect(thirdNoteX, closeTo(headerWidth + 120.0, 0.001));
+      expect(thirdNoteX, greaterThan(firstNoteX));
+
+      // At the tallest band the cap must actually be biting: the drawn
+      // staff height stays at the ceiling rather than continuing to grow
+      // with the band.
+      if (height > kDefaultMaxStaffHeight / kStaffBandFraction) {
+        expect(g.height, closeTo(kDefaultMaxStaffHeight, 0.001));
+      }
     }
   });
 

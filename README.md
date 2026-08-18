@@ -12,10 +12,12 @@ navigating.
 
 The visual foundation is done and tested. The screens around it are not.
 
-Working: the design system, the staff renderer, pitch detection, and the scoring
-engine. Running the app still shows the pre-revamp practice screen, which has a
-dead speed slider, a Stop and a Replay button that do the same thing, and no UI
-at all when microphone permission is denied. That screen is replaced in phase 2.
+Working: the design system, the staff renderer, pitch detection, the scoring
+engine, and the practice screen itself. `PracticeScreen` (`lib/ui/practice/`)
+replaced the old single-screen prototype: the speed control actually changes
+playback, Stop and Replay are distinct (Stop holds position, Replay rewinds),
+and a real `MicPermissionGate` covers a denied microphone instead of leaving
+the screen silently unusable.
 
 See `JOURNAL.md` for the decisions behind the current state, and
 `docs/specs/` and `docs/plans/` for the design and implementation notes.
@@ -25,20 +27,17 @@ See `JOURNAL.md` for the decisions behind the current state, and
 Read this before touching level content, because the obvious answer is wrong.
 
 Levels are **hardcoded in Dart**, in `lib/data/level_repository.dart`
-(`_loadBuiltInLevels`). There are three: a C major scale, a simple melody, and a
-mixed rhythm study.
+(`_loadBuiltInLevels`). There is no JSON asset pipeline: an earlier version of
+this app read `manifest.json` and `stages.json` from `assets/levels/`, neither
+of which ever existed, and silently fell back to these same built-in levels
+every time. That dead code path, and the `assets/levels/twinkle_twinkle.json`
+fixture that went with it, are gone.
 
-`assets/levels/twinkle_twinkle.json` is not used. Nothing reads it. It is
-written in a nested `pitch` and `duration` format that `LevelModel.fromJson`
-cannot parse, and the method that would load it, `LevelRepository.loadAll`, is
-never called from anywhere. That method also expects `manifest.json` and
-`stages.json`, neither of which exists, and it wraps the whole attempt in a
-`catch` that discards the error and silently falls back to the hardcoded levels.
-
-So the JSON pipeline is dead in three separate ways at once. Earlier versions of
-this README documented that JSON format as if it were the level format, which is
-how a wrong assumption about the data model reached a design document. Trust
-`lib/models/level_models.dart`.
+`LevelRepository` exposes three stages through `getAllStages()`: `stage_1`,
+`stage_2`, and `stage_3`, a C major scale, a simple melody, and a mixed rhythm
+study, with `stage_2` and `stage_3` gated behind their predecessor via
+`prerequisites`. Trust `lib/models/level_models.dart` for the data model and
+`lib/data/level_repository.dart` for the actual content.
 
 ## Architecture
 
@@ -50,7 +49,8 @@ lib/
 │   ├── audio_models.dart         PitchEvent, AudioEngineConfig
 │   └── engine_models.dart        NoteState, StageEvent, StageEngineStateModel
 ├── data/
-│   └── level_repository.dart     Hardcoded levels (see the section above)
+│   ├── level_repository.dart     Hardcoded levels (see the section above)
+│   └── progress_repository.dart  Per-stage score/accuracy, via shared_preferences
 ├── audio/
 │   ├── pitch_detector.dart       YIN fundamental frequency estimator
 │   └── audio_engine.dart         Microphone permission and pitch stream
@@ -64,12 +64,16 @@ lib/
     │   ├── staff_geometry.dart   Clef, and every measurement in staff-spaces
     │   ├── note_glyph.dart       Notehead shapes per note state
     │   ├── staff_painter.dart    One staff system: lines, clef, notes, playhead
-    │   ├── staff_view.dart       One or more systems stacked
-    │   └── horizontal_staff.dart Legacy scrolling wrapper, replaced in phase 2
+    │   └── staff_view.dart       One or more systems stacked
     ├── keyboard/
-    │   └── piano_keyboard.dart   Legacy 61 key keyboard, replaced in phase 2
-    └── game/
-        └── game_screen.dart      Legacy practice screen, replaced in phase 2
+    │   ├── keyboard_geometry.dart    Key layout math, independent of widgets
+    │   └── piano_keyboard_view.dart  The 61 key visualisation
+    └── practice/
+        ├── practice_screen.dart      The practice loop: HUD, staff, keyboard, transport
+        ├── stage_controller.dart     Riverpod glue between StageEngine and the screen
+        ├── mic_permission_gate.dart  Blocks the screen until the microphone is granted
+        ├── practice_hud.dart         Title, tempo, score, accuracy, progress
+        └── transport_column.dart     Play/pause, Stop, Replay, speed control
 ```
 
 ## The data model
@@ -118,8 +122,12 @@ wrong vertical position, and are missing outright on some Android builds.
 mean normalisation, the first dip below a 0.1 threshold, parabolic interpolation
 for sub-sample accuracy, and an autocorrelation confidence score.
 
-Defaults live in `AudioConfig`: 44.1kHz, a 1024 sample buffer, 80Hz to 2000Hz,
-and a 50 cent tolerance, which is a quarter tone.
+Defaults live in `AudioEngineConfig` (`lib/models/audio_models.dart`): 44.1kHz
+and a 2048 sample buffer. The 80Hz to 1000Hz detection gate is not one of
+those defaults; it is hardcoded in `PitchDetector.processBuffer`
+(`lib/audio/pitch_detector.dart`), not configurable through `AudioEngineConfig`
+at all. There is no cent-tolerance field anywhere in the config; pitch
+matching accuracy is a property of the scoring engine, not of detection.
 
 ## Fonts
 
@@ -142,14 +150,16 @@ verify-on-vm "<path to this repo>" "flutter test"
 verify-on-vm "<path to this repo>" "flutter analyze --no-fatal-infos"
 ```
 
-55 tests pass. `flutter analyze` reports 75 infos, all pre-existing in the
-legacy files.
+119 tests pass. `flutter analyze` reports 63 infos and 1 pre-existing warning,
+64 issues in total.
 
 Golden tests are skipped off Linux. Font rasterisation differs by host and
 Flutter's default comparator is byte exact, so the images are generated and
 checked on the same platform.
 
-`test/flutter_test_config.dart` loads the three fonts before any test runs.
+`test/flutter_test_config.dart` loads four fonts before any test runs: the
+three bundled families above, plus the Flutter SDK's own MaterialIcons, read
+from disk since it ships with the SDK rather than this package's assets.
 Without it, Flutter renders text as empty boxes and golden images silently bake
 in missing glyphs. An earlier set of goldens passed every test while showing
 black rectangles where the clef and time signature belonged.
@@ -175,9 +185,6 @@ test but cannot currently produce an APK.
 
 ## Still to build
 
-The five screens and routing, progress saved with `shared_preferences`, the
-engine wrapped in Riverpod so the staff stops rebuilding every frame, the
-keyboard reduced to a visualisation, a real state for denied microphone
-permission, and making the speed slider work, which needs
-`StageEngine.setPlaybackSpeed` implemented first: it is currently a stub that
-ignores its argument.
+Home, level select, results, and settings screens, and the router that
+connects them to the practice screen. Nothing navigates between stages yet;
+`PracticeScreen` is reachable today only by passing a `stageId` directly.

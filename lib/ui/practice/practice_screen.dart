@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,15 +38,34 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
   /// Held from initState because `ref` is already unusable by the time
   /// dispose runs.
   late final StageController _controller;
+  StreamSubscription<StageEvent>? _completionSub;
 
   @override
   void initState() {
     super.initState();
     _controller = ref.read(stageControllerProvider(widget.stageId).notifier);
+
+    // The legacy screen showed a "Stage Completed!" dialog; nothing replaced
+    // it once that screen was deleted, so the transport just went silent at
+    // the end. This listens to the same completion signal the controller
+    // already uses to write progress, and gives the learner a lightweight
+    // acknowledgement instead of a proper results screen, which is Plan 3's job.
+    _completionSub = _controller.events.listen((event) {
+      event.whenOrNull(stageCompleted: (accuracy, score, totalNotes, hitNotes) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Stage complete — score $score, ${(accuracy * 100).round()}% accuracy'),
+          ),
+        );
+      });
+    });
   }
 
   @override
   void dispose() {
+    _completionSub?.cancel();
     // The engine owns a periodic timer that outlives this widget: the provider
     // is not autoDispose, so leaving mid-song would keep the song running,
     // marking notes missed and eventually recording a completion the learner

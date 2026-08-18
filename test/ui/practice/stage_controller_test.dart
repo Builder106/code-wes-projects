@@ -114,6 +114,32 @@ void main() {
     expect(c.read(stageControllerProvider('stage_1')).sounding, isEmpty);
   });
 
+  test(
+      'a sounding note decays and drops out if not heard again within the window',
+      () async {
+    final c = harness();
+    addTearDown(c.dispose);
+    final ctrl = c.read(stageControllerProvider('stage_1').notifier);
+
+    ctrl.start();
+    ctrl.onPitch(const PitchEvent(
+      frequency: 440,
+      confidence: 1.0,
+      midiNote: 69,
+      timestamp: 0,
+      volume: 1.0,
+    ));
+    expect(c.read(stageControllerProvider('stage_1')).sounding, {69},
+        reason: 'the note should light immediately on detection');
+
+    // PitchDetector only emits while it hears a pitch; silence produces no
+    // event at all. Waiting past the decay window without a fresh detection
+    // must drop the note back out on its own.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    expect(c.read(stageControllerProvider('stage_1')).sounding, isEmpty,
+        reason: 'the note must not stay lit forever after going silent');
+  });
+
   test('a paused transport does not light the keyboard from a stray pitch',
       () {
     final c = harness();
@@ -130,6 +156,26 @@ void main() {
       volume: 1.0,
     ));
     expect(c.read(stageControllerProvider('stage_1')).sounding, isEmpty);
+  });
+
+  test('pause clears an already-lit key, same as stop', () {
+    final c = harness();
+    addTearDown(c.dispose);
+    final ctrl = c.read(stageControllerProvider('stage_1').notifier);
+
+    ctrl.start();
+    ctrl.onPitch(const PitchEvent(
+      frequency: 440,
+      confidence: 1.0,
+      midiNote: 69,
+      timestamp: 0,
+      volume: 1.0,
+    ));
+    expect(c.read(stageControllerProvider('stage_1')).sounding, {69});
+
+    ctrl.pause();
+    expect(c.read(stageControllerProvider('stage_1')).sounding, isEmpty,
+        reason: 'a paused transport should not show a lit key');
   });
 
   test('a pitch-stream error is logged rather than vanishing silently',

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:riverpod/riverpod.dart';
 import '../models/level_models.dart';
 import '../models/audio_models.dart';
 import '../models/engine_models.dart';
@@ -434,16 +433,3 @@ class StageEngine extends ChangeNotifier {
     super.dispose();
   }
 }
-
-/// Riverpod provider for the stage engine
-final stageEngineProvider = Provider.autoDispose<StageEngine>((ref) {
-  // This will be overridden when a specific level is selected
-  throw UnimplementedError('StageEngine must be created with a specific level');
-});
-
-/// Provider family for creating stage engines with specific levels
-final stageEngineProviderFamily = Provider.autoDispose.family<StageEngine, LevelModel>((ref, level) {
-  final engine = StageEngine(level: level);
-  ref.onDispose(() => engine.dispose());
-  return engine;
-});

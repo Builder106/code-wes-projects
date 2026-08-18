@@ -112,3 +112,72 @@ Also carried forward: the brace on the grand staff, which is unreachable until
 the level format carries a second staff; time-signature digits drawn in Cormorant
 rather than Bravura's own glyphs; and `lib/ui/game/game_screen.dart`, which is
 still the pre-revamp screen and is replaced wholesale in phase 2.
+
+## 2026-08-18: UI revamp, phase 2 (the practice screen)
+
+Branch `readme-and-phase-2`, 8 tasks, each reviewed and merged individually
+before this final whole-branch pass. Replaced the pre-revamp single-screen
+prototype with `PracticeScreen` and the Riverpod glue in
+`lib/ui/practice/stage_controller.dart`, deleted the dead JSON level pipeline
+and the legacy screen it fed, and closed out the phase-1 punch list: the
+speed control works, Stop and Replay are distinct, and a denied microphone
+gets a real UI state.
+
+### `stageControllerProvider` is not `.autoDispose`, on purpose
+
+This came up during task review twice and was deferred both times. Nothing
+in the app navigates between stages yet -- `PracticeScreen` is reachable only
+by passing a `stageId` directly, with no router in front of it -- so there is
+no point in the app's lifecycle where a stage's controller should actually be
+torn down and rebuilt. Making the provider `.autoDispose` now would change
+what `container.read(stageControllerProvider(id))` means across a rebuild
+(a fresh controller instead of the same one) for a scenario that cannot
+happen yet, and would need to be revisited anyway once Plan 3's router
+exists and defines when a stage screen actually unmounts for good. Decide it
+there, with a real navigation flow to test it against, not here against a
+hypothetical one.
+
+### One audio engine, not one per consumer
+
+`audioEngineProvider` is a single `Provider<AudioEngine>` that both
+`audioGrantedProvider` (permission and the initial `start()`) and
+`audioPitchStreamProvider` (the live pitch stream) read from. Two separate
+engines were considered and rejected: opening the microphone twice is worse
+than opening it once, and a retry-after-denial flow only works if the same
+engine instance that failed to initialize is the one asked to try again. A
+second engine created fresh at retry time would not carry that failure
+state, and the permission gate would have no way to tell whether a retry was
+really retrying anything.
+
+### Two tasks were added mid-plan, not in the original scope
+
+**Task 7, `StageEngine.setPlaybackSpeed`.** The phase-1 journal already
+corrected the record on this once: the spec had claimed the speed slider
+just needed wiring to an engine method that already worked. It didn't --
+`setPlaybackSpeed` was two comments and an ignored argument, and `_config`
+being `final` meant the playback tick could never see a changed speed. The
+UI-only task became an engine task once that was discovered.
+
+**Task 8, the staff height cap and scroll.** Ninety-two passing tests gave no
+signal that anything was wrong. A rendered screenshot did: on a tall band the
+staff overflowed its own container, because nothing had ever capped how much
+of the band the staff geometry was allowed to claim. `staffGeometryForBand`
+in `lib/ui/staff/staff_geometry.dart` and `kDefaultMaxStaffHeight` came out of
+that screenshot, not out of a failing test. The lesson carried over from
+phase 1 held again: a passing test suite is not evidence the thing looks
+right, only that it does what the tests happened to check.
+
+### Left from this final review for Plan 3
+
+Test coverage for the scroll path (no pixel or integration test), a
+practice-screen golden, and `main.dart`. `seekTo` has no caller from the UI.
+Stop and Replay both rewind to the start of the *transport*, so the
+difference between them is only in what they do to playback state, not to
+position on screen -- worth revisiting once there is a results screen to
+navigate back from. `onPitch`'s volume/confidence gate does not match
+`StageEngine.processPitchEvent`'s own gate, which is a duplicated-condition
+risk rather than a known bug. The note-index duplication between the
+controller and the engine, and the fire-and-forget `record()` /
+`setLastPlayed()` calls on `ProgressRepository`, are both still there.
+`test/_startup_screenshot_test.dart` is an untracked scratch file, kept
+deliberately; leave it alone.

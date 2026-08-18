@@ -201,6 +201,38 @@ void main() {
     }
   });
 
+  testWidgets('finishing a stage shows a completion SnackBar', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(740, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final container = ProviderContainer(
+      overrides: [audioGrantedProvider.overrideWith((ref) async => true)],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(container: container, child: _screen()),
+    );
+    // The permission gate resolves a frame after the first build.
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.play_arrow));
+    await tester.pump();
+
+    // stage_1 is 4 measures of 4 beats at 80 BPM: 16 beats at 80/60 beats
+    // per second is well under 13 seconds to run out the clock, past every
+    // note being marked missed and the engine reaching `completed`.
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pump();
+
+    expect(container.read(engineStatusProvider('stage_1')),
+        StageEngineStatus.completed);
+    // The legacy screen's "Stage Completed!" dialog was deleted along with
+    // it and nothing replaced it; this SnackBar is the smallest thing that
+    // closes that regression.
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.textContaining('Stage complete'), findsOneWidget);
+  });
+
   testWidgets('leaving the screen stops the engine', (tester) async {
     await tester.binding.setSurfaceSize(const Size(740, 360));
     addTearDown(() => tester.binding.setSurfaceSize(null));
