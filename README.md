@@ -178,5 +178,6 @@ test but cannot currently produce an APK.
 The five screens and routing, progress saved with `shared_preferences`, the
 engine wrapped in Riverpod so the staff stops rebuilding every frame, the
 keyboard reduced to a visualisation, a real state for denied microphone
-permission, and wiring the speed slider to `StageEngine.setPlaybackSpeed`, which
-already exists and has never been called.
+permission, and making the speed slider work, which needs
+`StageEngine.setPlaybackSpeed` implemented first: it is currently a stub that
+ignores its argument.

@@ -103,6 +103,11 @@ control column, the keyboard rewrite as visualization only, the
 microphone-permission state, wiring the speed slider to
 `StageEngine.setPlaybackSpeed`, and giving Stop and Replay distinct behaviour.
 
+Correction to an earlier note above: `setPlaybackSpeed` does not work and never
+did. Its body is two comments, it ignores its argument, and `_config` is final,
+so the playback tick reads a speed that is permanently 1.0. Making the slider
+work needs a small engine change, not just a UI connection.
+
 Also carried forward: the brace on the grand staff, which is unreachable until
 the level format carries a second staff; time-signature digits drawn in Cormorant
 rather than Bravura's own glyphs; and `lib/ui/game/game_screen.dart`, which is

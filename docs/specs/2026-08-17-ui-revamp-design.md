@@ -257,11 +257,17 @@ repository interface is enough of a seam if that ever changes.
 Three things get fixed along the way.
 
 The speed slider gets wired to `StageEngine.setPlaybackSpeed()`
-(`lib/engine/stage_engine.dart:367`). That method already exists and
-`_config.playbackSpeed` is already factored into the playback tick
-(`lib/engine/stage_engine.dart:251`), so the `// TODO: Implement speed change`
-in the UI was never blocked on engine work. The control just needs connecting,
-and its label needs to report the real value instead of a constant.
+(`lib/engine/stage_engine.dart:367`), but that method has to be implemented
+first. An earlier draft of this spec said it already worked and only needed
+connecting. It does not. Its body is two comments and nothing else, it ignores
+its argument, and `_config` is final, so `_config.playbackSpeed` is read by the
+playback tick and is permanently 1.0.
+
+So making the slider work is a small engine change as well as a UI one: hold the
+speed in a mutable field, read it in the tick, and restart the playback timer
+when it changes mid-play. That is the one place this work reaches below
+`lib/ui/`, and it is unavoidable, because wiring a control to a stub would leave
+the same dead slider with more code behind it.
 
 Stop and Replay get distinct behaviour, rather than both calling `reset()`.
 

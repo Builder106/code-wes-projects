@@ -32,7 +32,7 @@ Verified by reading the code, not the docs. Several contradict older documentati
 - **Levels are hardcoded in Dart.** `LevelRepository._loadBuiltInLevels` builds three levels (`level_1`, `level_2`, `level_3`) and three stages (`stage_1`, `stage_2`, `stage_3`). `loadAll()` is never called from anywhere, expects a `manifest.json` and `stages.json` that do not exist, and swallows its own failure in a bare `catch`. `assets/levels/twinkle_twinkle.json` is in a format `LevelModel.fromJson` cannot parse and is read by nothing. Task 6 removes the dead path.
 - **`StageEngine` public API:** `state` (a `StageEngineStateModel`), `allNotes`, `noteStates`, `events` (a `Stream<StageEvent>`), `start()`, `pause()`, `resume()`, `stop()`, `reset()`, `seekToBeat(double)`, `processPitchEvent(PitchEvent)`, `setPlaybackSpeed(double)`, `dispose()`.
 - **`stop()` and `reset()` are different methods.** The legacy screen wired both buttons to `reset()`. Stop halts and holds position; Replay returns to the start and plays.
-- **`setPlaybackSpeed` already works.** `_config.playbackSpeed` is factored into the playback tick. The slider was never connected.
+- **`setPlaybackSpeed` is a stub.** Its body is two comments and it ignores its argument. `_config` is final, so `_config.playbackSpeed` is read by the playback tick and stays 1.0 forever. Task 7 implements it. Wiring the slider to it before then yields a control that still does nothing.
 - **`StageEngineStateModel`** carries `engineState`, `level`, `currentBeat`, `noteStates`, `score`, `hitCount`, `missCount`, `perfectCount`, `goodCount`, `okayCount`, plus computed `progress` and `accuracy`.
 - **`AudioEngine.initialize()` returns `Future<bool>`**, false when microphone permission is denied. The legacy screen ignored the result.
 - **`NoteState`** has six values: `upcoming`, `active`, `hitPerfect`, `hitGood`, `hitOkay`, `missed`.
@@ -614,7 +614,7 @@ without touching the HUD or the transport.
 
 Stop and replay are separate methods here because the engine has always had
 both; the old screen wired each button to reset(). Speed clamps to 0.5x-2x and
-calls setPlaybackSpeed, which existed and was never invoked.
+calls setPlaybackSpeed, which is a stub until Task 7 implements it.
 
 An unknown stage id throws rather than rendering an empty staff that would look
 like a loading state."
@@ -1696,3 +1696,167 @@ screen."
 **Type consistency.** `StageUiState` is defined in Task 2 and consumed in Tasks 4 and 5; `sounding` is added to it in Task 5 and read in Task 4's screen, so Task 5 must update the screen it touches. `PlacedNote` and `Clef` come from Plan 1 and are used unchanged. `KeyboardGeometry` is defined in Task 3 and used only by its own painter. `audioGrantedProvider` is defined in Task 2 and overridden in the tests of Tasks 2, 4, and 5.
 
 **Known ordering hazard.** Task 5 adds a field to `StageUiState` and changes `practice_screen.dart`, which Task 4 creates. Running them out of order will not compile. They are sequential on purpose.
+
+---
+
+### Task 7: Implement setPlaybackSpeed in the engine
+
+Added after Task 2, when the "already works" claim turned out to be false. This is the one place Plan 2 reaches below `lib/ui/`, and it is unavoidable: wiring a slider to a stub leaves the same dead control with more code behind it.
+
+**Files:**
+- Modify: `lib/engine/stage_engine.dart`
+- Test: `test/engine/stage_engine_speed_test.dart`
+
+**Interfaces:**
+- Produces: a working `StageEngine.setPlaybackSpeed(double)` and a `playbackSpeed` getter.
+
+- [ ] **Step 1: Read the current state of the engine's timing**
+
+```bash
+sed -n '240,270p' lib/engine/stage_engine.dart
+grep -n '_config\|setPlaybackSpeed' lib/engine/stage_engine.dart
+```
+
+`_config` is `final` and assigned once, so `_config.playbackSpeed` can never change. The tick reads it at `_startPlaybackTimer`.
+
+- [ ] **Step 2: Write the failing test**
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:piano_tool/data/level_repository.dart';
+import 'package:piano_tool/engine/stage_engine.dart';
+
+void main() {
+  StageEngine engineForStage1() =>
+      StageEngine(level: LevelRepository().getAllStages().first.level);
+
+  test('playback speed defaults to 1.0', () {
+    final e = engineForStage1();
+    addTearDown(e.dispose);
+    expect(e.playbackSpeed, 1.0);
+  });
+
+  test('setting the speed is retained', () {
+    final e = engineForStage1();
+    addTearDown(e.dispose);
+    e.setPlaybackSpeed(1.5);
+    expect(e.playbackSpeed, 1.5);
+  });
+
+  test('speed is clamped to a usable range', () {
+    final e = engineForStage1();
+    addTearDown(e.dispose);
+    e.setPlaybackSpeed(99);
+    expect(e.playbackSpeed, lessThanOrEqualTo(2.0));
+    e.setPlaybackSpeed(0.01);
+    expect(e.playbackSpeed, greaterThanOrEqualTo(0.25));
+  });
+
+  test('a faster speed advances more beats in the same elapsed time', () async {
+    final slow = engineForStage1()..setPlaybackSpeed(0.5);
+    final fast = engineForStage1()..setPlaybackSpeed(2.0);
+    addTearDown(slow.dispose);
+    addTearDown(fast.dispose);
+
+    slow.start();
+    fast.start();
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+
+    expect(fast.state.currentBeat, greaterThan(slow.state.currentBeat),
+        reason: 'speed must affect how fast the playhead moves');
+  });
+
+  test('changing speed mid-playback takes effect without restarting the stage',
+      () async {
+    final e = engineForStage1();
+    addTearDown(e.dispose);
+
+    e.start();
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    final beforeChange = e.state.currentBeat;
+
+    e.setPlaybackSpeed(2.0);
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+
+    expect(e.state.currentBeat, greaterThan(beforeChange),
+        reason: 'the playhead must keep moving across a speed change');
+    expect(e.state.engineState.toString(), contains('playing'),
+        reason: 'changing speed must not stop playback');
+  });
+}
+```
+
+- [ ] **Step 3: Run it to verify it fails**
+
+```bash
+verify-on-vm "<repo>" "flutter test test/engine/stage_engine_speed_test.dart"
+```
+
+Expected: the retention and speed-effect tests fail, because the setter does nothing.
+
+- [ ] **Step 4: Implement**
+
+Add a mutable field beside `_config`, keeping `_config` final so nothing else changes:
+
+```dart
+  /// Playback speed multiplier. Held separately from _config, which is final.
+  double _playbackSpeed = 1.0;
+
+  double get playbackSpeed => _playbackSpeed;
+```
+
+Initialise it from the config in the constructor body so an explicitly
+configured speed is still honoured:
+
+```dart
+    _playbackSpeed = _config.playbackSpeed;
+```
+
+Replace every read of `_config.playbackSpeed` (the playback tick and
+`seekToBeat`) with `_playbackSpeed`.
+
+Then make the setter real:
+
+```dart
+  /// Set playback speed. Restarts the tick when playing, so a change takes
+  /// effect immediately rather than at the next start.
+  void setPlaybackSpeed(double speed) {
+    final clamped = speed.clamp(0.25, 2.0);
+    if (clamped == _playbackSpeed) return;
+    _playbackSpeed = clamped;
+
+    if (_state.engineState == StageEngineStatus.playing) {
+      _startPlaybackTimer(); // cancels the existing timer first
+    }
+    _notifyStateChanged();
+  }
+```
+
+Confirm `_startPlaybackTimer` calls `_stopPlaybackTimer` first. It does at the
+time of writing; if that changes, stop the timer explicitly rather than leaking
+a second one.
+
+- [ ] **Step 5: Run the tests and the whole suite**
+
+```bash
+verify-on-vm "<repo>" "flutter test && flutter analyze --no-fatal-infos"
+```
+
+The timing tests are wall-clock dependent. If one proves flaky on the VM,
+widen the delay rather than weakening the assertion, and say so in your report.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add lib/engine/stage_engine.dart test/engine/stage_engine_speed_test.dart
+git commit -m "Implement setPlaybackSpeed instead of ignoring it
+
+The method's body was two comments and it discarded its argument. _config is
+final, so the playback tick read a speed that was permanently 1.0 no matter what
+any caller asked for. Speed now lives in a mutable field, and changing it while
+playing restarts the tick so it takes effect immediately.
+
+Documentation in three places claimed this method already worked and only needed
+connecting from the UI. It did not, and wiring a control to it would have left
+the same dead slider."
+```
