@@ -1860,3 +1860,168 @@ Documentation in three places claimed this method already worked and only needed
 connecting from the UI. It did not, and wiring a control to it would have left
 the same dead slider."
 ```
+
+---
+
+### Task 8: Cap the staff height and follow the playhead
+
+Added after Task 4, when six rendered screenshots showed what 92 passing tests
+did not. The staff sizes every glyph from its band height, which was right when
+Plan 1's goldens gave it a 220px band and wrong the moment the practice screen
+gave it an `Expanded` one. At 640x360 the clef is taller than the keyboard, the
+time signature eats a third of the viewport, three of sixteen beats are visible,
+and the playhead is a few hundred pixels off the right edge because nothing ever
+scrolls. Runs before Task 5.
+
+**Files:**
+- Modify: `lib/ui/staff/staff_geometry.dart`
+- Modify: `lib/ui/staff/staff_view.dart`
+- Modify: `lib/ui/staff/staff_painter.dart`
+- Modify: `lib/ui/practice/practice_screen.dart`
+- Modify: `test/flutter_test_config.dart`
+- Test: `test/ui/staff/staff_scroll_test.dart`
+
+**Interfaces:**
+- Produces: a top-level pure function in `staff_geometry.dart`,
+  `double staffScrollOffset({required double playheadX, required double
+  viewportWidth, required double contentWidth, double anchorFraction = 0.3})`,
+  returning the number of pixels the staff content is shifted left; and
+  `StaffView` gaining `double maxStaffHeight` (default `120`) and
+  `double currentBeat`.
+
+- [ ] **Step 1: Write the failing scroll test**
+
+The function is pure, so it needs no widget. Three behaviours: it does not
+scroll before the playhead reaches the anchor, it keeps the playhead pinned at
+the anchor through the middle of the piece, and it stops at the end rather than
+scrolling past the last note into empty space.
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:piano_tool/ui/staff/staff_geometry.dart';
+
+void main() {
+  const viewport = 580.0;
+  const content = 1400.0;
+  const anchor = 0.3 * viewport; // 174
+
+  test('does not scroll while the playhead is left of the anchor', () {
+    expect(
+      staffScrollOffset(
+          playheadX: 0, viewportWidth: viewport, contentWidth: content),
+      0,
+    );
+    expect(
+      staffScrollOffset(
+          playheadX: anchor - 1, viewportWidth: viewport, contentWidth: content),
+      0,
+    );
+  });
+
+  test('pins the playhead at the anchor through the middle', () {
+    expect(
+      staffScrollOffset(
+          playheadX: 500, viewportWidth: viewport, contentWidth: content),
+      closeTo(500 - anchor, 1e-9),
+    );
+  });
+
+  test('stops when the end of the content reaches the right edge', () {
+    expect(
+      staffScrollOffset(
+          playheadX: 1400, viewportWidth: viewport, contentWidth: content),
+      closeTo(content - viewport, 1e-9),
+    );
+  });
+
+  test('never scrolls when the content is narrower than the viewport', () {
+    expect(
+      staffScrollOffset(
+          playheadX: 300, viewportWidth: viewport, contentWidth: 400),
+      0,
+    );
+  });
+}
+```
+
+- [ ] **Step 2: Run it and confirm it fails**
+
+```bash
+verify-on-vm "<repo>" "flutter test test/ui/staff/staff_scroll_test.dart"
+```
+
+Expected: FAIL, `staffScrollOffset` is not defined.
+
+- [ ] **Step 3: Implement the function**
+
+```dart
+/// Pixels the staff content is shifted left so the playhead stays visible.
+///
+/// The playhead sits still at [anchorFraction] of the viewport while the music
+/// moves under it, which is what a scrolling score does. Clamped at both ends:
+/// no scrolling before the anchor is reached, and none past the final beat.
+double staffScrollOffset({
+  required double playheadX,
+  required double viewportWidth,
+  required double contentWidth,
+  double anchorFraction = 0.3,
+}) {
+  final maxOffset = contentWidth - viewportWidth;
+  if (maxOffset <= 0) return 0;
+  final anchor = viewportWidth * anchorFraction;
+  return (playheadX - anchor).clamp(0.0, maxOffset);
+}
+```
+
+- [ ] **Step 4: Run it green, then cap the staff height**
+
+`StaffView` currently hands the full band height to `StaffGeometry`. Give it a
+`maxStaffHeight` (default `120`) and size the geometry from
+`min(bandHeight, maxStaffHeight)`, then centre the resulting staff vertically in
+whatever band it was given. Every glyph stays in staff-spaces, so nothing else
+changes: the clef, the time signature, and the noteheads all shrink together.
+
+Pass `currentBeat` through to the painter and translate the canvas by
+`-staffScrollOffset(...)` before drawing notes, leaving the clef and time
+signature pinned to the left edge so they do not scroll away.
+
+- [ ] **Step 5: Write the height-cap widget test**
+
+```dart
+testWidgets('the staff never grows past its cap in a tall band', (tester) async {
+  await tester.pumpWidget(/* StaffView with maxStaffHeight: 120 in a 400dp band */);
+  final size = tester.getSize(find.byType(StaffView));
+  expect(size.height, 400);
+  // The painted staff, not the band, is what is capped.
+  // Assert against the geometry the view built, not the widget box.
+});
+```
+
+Assert the geometry's staff height is 120 and not 400. If `StaffView` does not
+expose its geometry, expose it for the test rather than asserting on pixels.
+
+- [ ] **Step 6: Load MaterialIcons in the shared test harness**
+
+`test/flutter_test_config.dart` loads the three bundled fonts but not
+`MaterialIcons`, which `flutter test` does not ship. Every transport icon
+therefore renders as a tofu box in any golden. This is the same defect that
+already shipped once in Plan 1. Load it alongside the other three.
+
+- [ ] **Step 7: Full suite, then look at the pixels**
+
+```bash
+verify-on-vm "<repo>" "flutter test && flutter analyze --no-fatal-infos"
+```
+
+Then re-render the six practice-screen shots at 640x360, 740x360 and 915x412 in
+both themes, mid-playback, and open every one. The playhead must be visible and
+roughly a third across, the clef must be a sensible fraction of the band, and no
+notehead may cross into the keyboard. A green suite is not evidence here. It has
+been wrong three times.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add lib/ui/staff test/ui/staff/staff_scroll_test.dart test/flutter_test_config.dart lib/ui/practice/practice_screen.dart
+git commit -m "Cap the staff height and scroll it to follow the playhead"
+```
