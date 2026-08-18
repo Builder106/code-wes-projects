@@ -1,18 +1,21 @@
-# Code-Wes Engineering Portfolio
+# Code-Wes Engineering Hub
 
-This repository serves as a central engineering notebook and portfolio hub for the projects I build and lead as part of the **Code-Wes** Computer Science Club at Wesleyan University (2024–2026).
+> **Project pitches, architecture specs, and prototypes for Wesleyan University's coding club.**
 
-Rather than housing the actual production source code (which lives directly in the [Code-Wes GitHub Organization](https://github.com/Code-Wes)), this repository contains initial pitches, architectural design documents, prototypes, and the master engineering journal.
+## 💡 What is Code-Wes?
 
-## Projects
+Code-Wes is the student-run Computer Science organization at Wesleyan University where student developers collaborate on ambitious software and systems engineering projects.
 
-### 1. [Portal 2 Web Bridge](https://github.com/Code-Wes/portal-web-bridge) (In development)
+This repository serves as an open workspace for planning new club initiatives, recording architectural design documents, and building early prototypes before they launch across the university community.
 
-**Status:** In Development
-Turning a live instance of Portal 2 into an interactive web server. By launching Portal 2 with the `-netconport` flag, this project uses a Fastify backend and a React frontend to allow a crowd of users to safely control the game over a low-latency stream.
+## Featured Initiatives
+
+### 1. [Portal 2 Web Bridge](https://github.com/Code-Wes/portal-web-bridge)
+
+Turn a running copy of the video game *Portal 2* into an interactive, crowd-controlled web experiment. Using game network sockets, a fast web server, and a responsive frontend, multiple remote players can queue actions and guide players through test chambers in real time.
 
 - Architecture and Milestones: [TODO-Portal2.md](./TODO-Portal2.md)
-- Original pitch email: [proposal-email/](./proposal-email/)
+- Original Project Pitch: [proposal-email/](./proposal-email/)
 
 ---
 
