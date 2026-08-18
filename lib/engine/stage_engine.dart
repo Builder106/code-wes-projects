@@ -10,6 +10,11 @@ class StageEngine extends ChangeNotifier {
   final LevelModel _level;
   final StageEngineConfig _config;
 
+  /// Playback speed multiplier. Held separately from _config, which is final.
+  double _playbackSpeed = 1.0;
+
+  double get playbackSpeed => _playbackSpeed;
+
   StageEngineStateModel _state = StageEngineStateModel(
     engineState: StageEngineStatus.idle,
     level: const LevelModel(
@@ -40,6 +45,7 @@ class StageEngine extends ChangeNotifier {
     StageEngineConfig? config,
   })  : _level = level,
         _config = config ?? const StageEngineConfig() {
+    _playbackSpeed = _config.playbackSpeed;
     _initializeNotes();
     _state = _state.copyWith(
       engineState: StageEngineStatus.idle,
@@ -248,7 +254,7 @@ class StageEngine extends ChangeNotifier {
     _stopPlaybackTimer();
 
     const tickInterval = Duration(milliseconds: 16); // ~60 FPS
-    final beatsPerSecond = _level.tempo / 60.0 * _config.playbackSpeed;
+    final beatsPerSecond = _level.tempo / 60.0 * _playbackSpeed;
 
     _playbackTimer = Timer.periodic(tickInterval, (timer) {
       final deltaBeats = beatsPerSecond * (tickInterval.inMilliseconds / 1000.0);
@@ -363,16 +369,23 @@ class StageEngine extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Set playback speed
+  /// Set playback speed. Restarts the tick when playing, so a change takes
+  /// effect immediately rather than at the next start.
   void setPlaybackSpeed(double speed) {
-    // Note: This would require restarting the timer
-    // For now, just notify
+    final clamped = speed.clamp(0.25, 2.0);
+    if (clamped == _playbackSpeed) return;
+    _playbackSpeed = clamped;
+
+    if (_state.engineState == StageEngineStatus.playing) {
+      _startPlaybackTimer(); // cancels the existing timer first
+    }
+    _notifyStateChanged();
   }
 
   /// Seek to a specific beat position (for scrubbing)
   void seekToBeat(double beat) {
     final clampedBeat = beat.clamp(0.0, _level.totalMeasures * _level.beatsPerMeasure.toDouble());
-    _elapsedTime = clampedBeat / (_level.tempo / 60.0 * _config.playbackSpeed);
+    _elapsedTime = clampedBeat / (_level.tempo / 60.0 * _playbackSpeed);
 
     // Reset note states up to the seek position
     final newStates = List<NoteState>.from(_state.noteStates);
