@@ -68,9 +68,19 @@ class _Denied extends StatelessWidget {
                   const SizedBox(width: PianoSpacing.sm),
                   // A permanently denied permission never prompts again, so
                   // retry alone would be a dead end.
-                  const TextButton(
-                    onPressed: openAppSettings,
-                    child: Text('Open settings'),
+                  TextButton(
+                    // openAppSettings() reports whether it could open the
+                    // settings screen; a plain tear-off would discard that
+                    // exactly like the boolean this task exists to stop
+                    // ignoring, so a failure is at least logged.
+                    onPressed: () async {
+                      final opened = await openAppSettings();
+                      if (!opened) {
+                        debugPrint(
+                            'MicPermissionGate: could not open app settings');
+                      }
+                    },
+                    child: const Text('Open settings'),
                   ),
                 ],
               ),

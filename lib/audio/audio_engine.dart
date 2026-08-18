@@ -31,7 +31,13 @@ class AudioEngine {
     await _pitchDetector.start();
     _pitchSubscription = _pitchDetector.pitchStream.listen(
       (event) => _pitchController.add(event),
-      onError: (e) => debugPrint('AudioEngine: Pitch stream error: $e'),
+      onError: (Object error, StackTrace stackTrace) {
+        debugPrint('AudioEngine: Pitch stream error: $error');
+        // Forwarded, not just logged: a listener on [pitchStream] (the
+        // provider that feeds the practice screen) otherwise has no way to
+        // learn the detector broke mid-session.
+        _pitchController.addError(error, stackTrace);
+      },
     );
     debugPrint('AudioEngine: Started');
   }

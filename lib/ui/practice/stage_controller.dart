@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../audio/audio_engine.dart';
@@ -128,7 +129,14 @@ class StageController extends StateNotifier<StageUiState> {
   }
 
   /// A detected pitch both scores against the level and lights the keyboard.
+  ///
+  /// The microphone keeps listening across Stop and Pause -- [stop] only
+  /// halts the [StageEngine], not the audio engine -- so without this guard a
+  /// stray tail of a decaying note (or a hand still on the keys) would relight
+  /// a key on a keyboard whose transport reads "stopped." Mirrors the same
+  /// check [StageEngine.processPitchEvent] already applies internally.
   void onPitch(PitchEvent event) {
+    if (state.status != StageEngineStatus.playing) return;
     _engine.processPitchEvent(event);
     state = state.copyWith(sounding: {event.midiNote});
     _sync();
@@ -214,8 +222,23 @@ final stageControllerProvider =
 
   // Pitch events only flow once permission was granted; the gate makes sure
   // the screen is not reachable before then.
+  //
+  // This subscription lives as long as the provider does, same as the
+  // engine's own event subscription cancelled in StageController.dispose --
+  // the provider is not autoDispose, so both share the same accepted
+  // lifetime tradeoff documented where the screen stops the controller.
   ref.listen(audioPitchStreamProvider, (_, next) {
-    next.whenData(controller.onPitch);
+    next.when(
+      data: controller.onPitch,
+      // A stream error (a device hiccup, the mic disconnecting mid-session)
+      // does not stop the transport or unmount the screen; only this one
+      // pitch is lost. There is no existing error surface for a mid-session
+      // event this rare -- the permission gate only speaks to the initial
+      // grant -- so this is logged rather than given a new UI state.
+      error: (error, stackTrace) =>
+          debugPrint('audioPitchStreamProvider error: $error'),
+      loading: () {},
+    );
   });
 
   return controller;
