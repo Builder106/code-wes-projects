@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/rendering.dart';
 import '../../models/engine_models.dart';
 import '../theme/tokens.dart';
@@ -125,7 +126,11 @@ class StaffPainter extends CustomPainter {
   @override
   bool shouldRepaint(StaffPainter old) =>
       old.currentBeat != currentBeat ||
-      old.notes != notes ||
+      old.clef != clef ||
       old.colors != colors ||
-      old.clef != clef;
+      old.pixelsPerBeat != pixelsPerBeat ||
+      old.leadingBeats != leadingBeats ||
+      old.beatsPerMeasure != beatsPerMeasure ||
+      old.totalBeats != totalBeats ||
+      !listEquals(old.notes, notes);
 }

@@ -35,4 +35,29 @@ void main() {
     expect(_painter(beat: 1).shouldRepaint(_painter(beat: 0)), isTrue);
     expect(_painter(beat: 0).shouldRepaint(_painter(beat: 0)), isFalse);
   });
+
+  test('does not repaint when an equal note list is rebuilt', () {
+    // A fresh list with identical contents must not force a repaint.
+    expect(_painter(beat: 0).shouldRepaint(_painter(beat: 0)), isFalse);
+  });
+
+  test('repaints when a note state actually changes', () {
+    final a = _painter(beat: 0);
+    final b = StaffPainter(
+      clef: Clef.treble,
+      notes: const [
+        (midi: 60, startBeat: 0, state: NoteState.missed),
+        (midi: 64, startBeat: 1, state: NoteState.missed),
+        (midi: 67, startBeat: 2, state: NoteState.active),
+        (midi: 72, startBeat: 3, state: NoteState.upcoming),
+      ],
+      colors: PianoColors.light(),
+      currentBeat: 0,
+      totalBeats: 8,
+      beatsPerMeasure: 4,
+      pixelsPerBeat: 60,
+      leadingBeats: 2,
+    );
+    expect(b.shouldRepaint(a), isTrue);
+  });
 }

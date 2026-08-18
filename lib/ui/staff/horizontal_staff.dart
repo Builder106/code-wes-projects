@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../models/level_models.dart';
 import '../../models/engine_models.dart';
-import '../theme/tokens.dart';
+import '../theme/app_theme.dart';
 import 'staff_geometry.dart';
 import 'staff_painter.dart';
 
@@ -154,9 +154,7 @@ class _HorizontalStaffState extends State<HorizontalStaff>
                             : NoteState.upcoming,
                       ),
                 ],
-                colors: Theme.of(context).brightness == Brightness.dark
-                    ? PianoColors.dark()
-                    : PianoColors.light(),
+                colors: PianoTheme.colorsOf(context),
                 currentBeat: widget.currentBeat,
                 totalBeats: (widget.level.totalMeasures * widget.level.beatsPerMeasure)
                     .toDouble(),
