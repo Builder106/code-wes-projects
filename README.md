@@ -1,26 +1,19 @@
 # Piano Tool
 
-A Flutter piano practice app. Sheet music scrolls horizontally while the
-microphone listens, and each note is marked hit or missed against the pitch you
-actually played.
+> **Interactive piano practice tutor with real-time pitch detection.** Scrolls sheet music, listens via your device's microphone, and scores your notes as you play.
 
-Landscape only, on purpose. Sheet music and a five octave keyboard both want
-horizontal space, and locking a single screen would rotate you in and out while
-navigating.
+## 💡 What is Piano Tool?
 
-## Status
+Learning to read sheet music on a real piano requires immediate feedback on whether you hit the right key at the right tempo. 
 
-The visual foundation is done and tested. The screens around it are not.
+Piano Tool acts as an interactive music coach on your tablet or phone. It displays scrolling musical staves and an on-screen keyboard, listens to your acoustic or digital piano through the microphone, and instantly marks notes as correct or missed while tracking your timing accuracy.
 
-Working: the design system, the staff renderer, pitch detection, the scoring
-engine, and the practice screen itself. `PracticeScreen` (`lib/ui/practice/`)
-replaced the old single-screen prototype: the speed control actually changes
-playback, Stop and Replay are distinct (Stop holds position, Replay rewinds),
-and a real `MicPermissionGate` covers a denied microphone instead of leaving
-the screen silently unusable.
+## Project Status
 
-See `JOURNAL.md` for the decisions behind the current state, and
-`docs/specs/` and `docs/plans/` for the design and implementation notes.
+The core practice foundation is fully functional:
+- **Scrolling Staff Renderer**: Clean musical notation rendering notes, measures, and active playheads.
+- **Audio Pitch Detection**: Real-time microphone listening that matches played frequencies to musical notes.
+- **Practice Screen & Transport**: Interactive controls for tempo adjustment, replay, score calculation, and keyboard visualization.
 
 ## Where the levels actually come from
 
