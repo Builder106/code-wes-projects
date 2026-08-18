@@ -133,9 +133,10 @@ low x-height would hurt legibility.
 IBM Plex Sans 400/500/600 carries everything else, and every metric sets
 `FontFeature.tabularFigures()` so numbers hold their columns as they change.
 
-Both live in the `google_fonts` package, so neither needs bundling. A mono
+Both are bundled under `assets/fonts/` rather than pulled from the
+`google_fonts` package, so there is no network fetch on first launch. A mono
 outlier for the metrics was considered and cut: Plex Sans has real tabular
-figures, so a third font download on a mobile app buys nothing.
+figures, so a third bundled font buys nothing.
 
 This replaces `GoogleFonts.interTextTheme()` (`lib/main.dart:25` and `:34`).
 Inter is the most on-distribution font available and reads as un-chosen.
@@ -223,10 +224,20 @@ spaces, and stems run roughly two.
 That unit is what makes the grand staff free. Halve the band and every glyph
 scales with it, with no separate sizing path.
 
-The renderer draws what the level declares. A level with one `clef` gets one
-staff; a level declaring two gets a braced grand staff. `twinkle_twinkle.json`
-keeps working untouched, because the second staff is an optional addition to the
-level format rather than a replacement.
+The renderer draws whatever it is handed: a list of systems, each naming its own
+clef. One system draws one staff, two draw a braced grand staff.
+
+A correction to an earlier draft of this section, found while planning. It said
+a level "declares one `clef`". It does not. `lib/models/level_models.dart` has
+no clef type at all; `LevelModel` carries `clefOctave` (an int) and `transpose`,
+and the current painter hardcodes a treble clef. The README documents a level
+format that does not match the models either, and that README is where the wrong
+claim came from.
+
+So `Clef` is introduced as a UI-layer rendering concept, and the caller decides
+which systems to draw. Adding a `clef` field to the level format belongs with
+the practice screen that would read it, in the second phase of work.
+`twinkle_twinkle.json` keeps working untouched either way.
 
 Stems are drawn as siblings of the notehead, never as children, so they stay
 vertical instead of inheriting the notehead's rotation. Treble stems hang down
@@ -304,5 +315,6 @@ visual risk. Goldens are the mitigation.
 created and populated in the same change that references it, or the build
 breaks.
 
-The project is not a git repository. There is no history to fall back on if the
-rewrite goes wrong, and no way to review the change as a diff.
+The project is now a git repository, but the branch carries the whole rewrite
+as a single line of commits. There is limited history to fall back on if
+something goes wrong, so each change should stay reviewable as its own diff.

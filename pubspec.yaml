@@ -28,9 +28,6 @@ dependencies:
   synchronized: ^3.1.0
   permission_handler: ^11.1.0
 
-  # UI
-  google_fonts: ^6.1.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,4 +43,13 @@ flutter:
   uses-material-design: true
   assets:
     - assets/levels/
-    - assets/fonts/
+  fonts:
+    - family: CormorantGaramond
+      fonts:
+        - asset: assets/fonts/CormorantGaramond.ttf
+    - family: IBMPlexSans
+      fonts:
+        - asset: assets/fonts/IBMPlexSans.ttf
+    - family: Bravura
+      fonts:
+        - asset: assets/fonts/Bravura.otf

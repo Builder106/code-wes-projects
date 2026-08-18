@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../models/level_models.dart';
 import '../../models/engine_models.dart';
+import '../theme/app_theme.dart';
+import 'staff_geometry.dart';
 import 'staff_painter.dart';
 
 /// Horizontal scrolling sheet music staff widget
@@ -92,8 +94,19 @@ class _HorizontalStaffState extends State<HorizontalStaff>
 
   @override
   Widget build(BuildContext context) {
-    final totalWidth = widget.level.totalMeasures * widget.level.beatsPerMeasure * widget.pixelsPerBeat;
     final staffHeight = 250.0;
+    // Mirrors StaffPainter.paint: the staff occupies the middle 56% of the
+    // band, leaving room above and below for ledger lines. The two must
+    // stay in sync, since this is how the header width lines up with what
+    // the painter actually draws.
+    final staffBandHeight = staffHeight * 0.56;
+    final geometry = StaffGeometry(
+      top: (staffHeight - staffBandHeight) / 2,
+      height: staffBandHeight,
+    );
+    final headerWidth = StaffPainter.headerWidthFor(geometry);
+    final totalWidth = headerWidth +
+        widget.level.totalMeasures * widget.level.beatsPerMeasure * widget.pixelsPerBeat;
 
     return GestureDetector(
       onHorizontalDragStart: (_) => _isUserScrolling = true,
@@ -113,7 +126,8 @@ class _HorizontalStaffState extends State<HorizontalStaff>
           final renderBox = context.findRenderObject() as RenderBox?;
           if (renderBox != null) {
             final localPosition = renderBox.globalToLocal(details.globalPosition);
-            final beat = (localPosition.dx + _scrollController.offset) / widget.pixelsPerBeat;
+            final beat = (localPosition.dx + _scrollController.offset - headerWidth) /
+                widget.pixelsPerBeat;
             widget.onSeek!(beat);
           }
         }
@@ -140,147 +154,29 @@ class _HorizontalStaffState extends State<HorizontalStaff>
             child: CustomPaint(
               size: Size(totalWidth, staffHeight),
               painter: StaffPainter(
-                level: widget.level,
-                allNotes: widget.allNotes,
-                noteStates: widget.noteStates,
+                clef: Clef.treble,
+                notes: [
+                  for (var i = 0; i < widget.allNotes.length; i++)
+                    if (!widget.allNotes[i].isRest)
+                      (
+                        midi: widget.allNotes[i].midiNote,
+                        startBeat: widget.allNotes[i].startBeat,
+                        state: i < widget.noteStates.length
+                            ? widget.noteStates[i]
+                            : NoteState.upcoming,
+                      ),
+                ],
+                colors: PianoTheme.colorsOf(context),
                 currentBeat: widget.currentBeat,
+                totalBeats: (widget.level.totalMeasures * widget.level.beatsPerMeasure)
+                    .toDouble(),
+                beatsPerMeasure: widget.level.beatsPerMeasure,
                 pixelsPerBeat: widget.pixelsPerBeat,
-                beatsPerMeasure: widget.level.beatsPerMeasure.toDouble(),
-                isDarkMode: Theme.of(context).brightness == Brightness.dark,
               ),
             ),
           ),
         ),
       ),
     );
-  }
-}
-
-/// Animated playhead overlay that moves smoothly
-class AnimatedPlayhead extends StatefulWidget {
-  final double currentBeat;
-  final double pixelsPerBeat;
-  final double staffHeight;
-  final ScrollController scrollController;
-
-  const AnimatedPlayhead({
-    super.key,
-    required this.currentBeat,
-    required this.pixelsPerBeat,
-    required this.staffHeight,
-    required this.scrollController,
-  });
-
-  @override
-  State<AnimatedPlayhead> createState() => _AnimatedPlayheadState();
-}
-
-class _AnimatedPlayheadState extends State<AnimatedPlayhead>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  double _previousBeat = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 16), // ~60 FPS
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
-    _previousBeat = widget.currentBeat;
-  }
-
-  @override
-  void didUpdateWidget(covariant AnimatedPlayhead oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.currentBeat != oldWidget.currentBeat) {
-      _previousBeat = oldWidget.currentBeat;
-      _controller.forward(from: 0.0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animation,
-      builder: (context, child) {
-        final interpolatedBeat = _previousBeat +
-            (widget.currentBeat - _previousBeat) * _animation.value;
-        final x = interpolatedBeat * widget.pixelsPerBeat - widget.scrollController.offset;
-
-        if (x < 0 || x > MediaQuery.of(context).size.width) {
-          return const SizedBox.shrink();
-        }
-
-        return Positioned(
-          left: x,
-          top: 0,
-          bottom: 0,
-          child: CustomPaint(
-            painter: _PlayheadPainter(
-              color: Theme.of(context).colorScheme.error,
-            ),
-            size: const Size(4, double.infinity),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _PlayheadPainter extends CustomPainter {
-  final Color color;
-
-  _PlayheadPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 3.0
-      ..style = PaintingStyle.stroke;
-
-    // Main line
-    canvas.drawLine(
-      Offset(size.width / 2, 0),
-      Offset(size.width / 2, size.height),
-      paint,
-    );
-
-    // Triangle at top
-    final trianglePaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-
-    final trianglePath = Path();
-    trianglePath.moveTo(size.width / 2, -8);
-    trianglePath.lineTo(size.width / 2 - 8, 0);
-    trianglePath.lineTo(size.width / 2 + 8, 0);
-    trianglePath.close();
-
-    canvas.drawPath(trianglePath, trianglePaint);
-
-    // Triangle at bottom
-    final bottomTrianglePath = Path();
-    bottomTrianglePath.moveTo(size.width / 2, size.height + 8);
-    bottomTrianglePath.lineTo(size.width / 2 - 8, size.height);
-    bottomTrianglePath.lineTo(size.width / 2 + 8, size.height);
-    bottomTrianglePath.close();
-
-    canvas.drawPath(bottomTrianglePath, trianglePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _PlayheadPainter oldDelegate) {
-    return oldDelegate.color != color;
   }
 }
