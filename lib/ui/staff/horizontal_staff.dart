@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../models/level_models.dart';
 import '../../models/engine_models.dart';
+import '../theme/tokens.dart';
+import 'staff_geometry.dart';
 import 'staff_painter.dart';
 
 /// Horizontal scrolling sheet music staff widget
@@ -140,13 +142,27 @@ class _HorizontalStaffState extends State<HorizontalStaff>
             child: CustomPaint(
               size: Size(totalWidth, staffHeight),
               painter: StaffPainter(
-                level: widget.level,
-                allNotes: widget.allNotes,
-                noteStates: widget.noteStates,
+                clef: Clef.treble,
+                notes: [
+                  for (var i = 0; i < widget.allNotes.length; i++)
+                    if (!widget.allNotes[i].isRest)
+                      (
+                        midi: widget.allNotes[i].midiNote,
+                        startBeat: widget.allNotes[i].startBeat,
+                        state: i < widget.noteStates.length
+                            ? widget.noteStates[i]
+                            : NoteState.upcoming,
+                      ),
+                ],
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? PianoColors.dark()
+                    : PianoColors.light(),
                 currentBeat: widget.currentBeat,
+                totalBeats: (widget.level.totalMeasures * widget.level.beatsPerMeasure)
+                    .toDouble(),
+                beatsPerMeasure: widget.level.beatsPerMeasure,
                 pixelsPerBeat: widget.pixelsPerBeat,
-                beatsPerMeasure: widget.level.beatsPerMeasure.toDouble(),
-                isDarkMode: Theme.of(context).brightness == Brightness.dark,
+                leadingBeats: 0,
               ),
             ),
           ),
