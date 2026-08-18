@@ -58,4 +58,12 @@ void main() {
       contains(const FontFeature.tabularFigures()),
     );
   });
+
+  test('theme extension lerps tokens rather than snapping', () {
+    final light = PianoColorsExtension(PianoColors.light());
+    final dark = PianoColorsExtension(PianoColors.dark());
+    final mid = light.lerp(dark, 0.5);
+    expect(mid.colors.paper, isNot(PianoColors.light().paper));
+    expect(mid.colors.paper, isNot(PianoColors.dark().paper));
+  });
 }

@@ -13,8 +13,15 @@ class PianoColorsExtension extends ThemeExtension<PianoColorsExtension> {
       PianoColorsExtension(colors ?? this.colors);
 
   @override
-  PianoColorsExtension lerp(ThemeExtension<PianoColorsExtension>? other, double t) =>
-      t < 0.5 ? this : (other as PianoColorsExtension? ?? this);
+  PianoColorsExtension lerp(ThemeExtension<PianoColorsExtension>? other, double t) {
+    if (other is! PianoColorsExtension) return this;
+    final a = colors.argb;
+    final b = other.colors.argb;
+    return PianoColorsExtension(PianoColors.fromArgb({
+      for (final key in a.keys)
+        key: Color.lerp(Color(a[key]!), Color(b[key]!), t)!.toARGB32(),
+    }));
+  }
 }
 
 abstract final class PianoTheme {

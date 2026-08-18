@@ -44,7 +44,13 @@ class PianoColors {
   factory PianoColors.light() => const PianoColors._(argbLight);
   factory PianoColors.dark() => const PianoColors._(argbDark);
 
+  /// Builds a transient token set, used only for theme-transition lerping.
+  factory PianoColors.fromArgb(Map<String, int> argb) => PianoColors._(argb);
+
   final Map<String, int> _argb;
+
+  /// The raw ARGB values behind this token set. Exposed for theme lerping.
+  Map<String, int> get argb => _argb;
 
   Color _c(String name) => Color(_argb[name]!);
 
