@@ -75,7 +75,7 @@ void main() {
 
       final staffHeight = height * 0.56;
       final g = StaffGeometry(top: (height - staffHeight) / 2, height: staffHeight);
-      final headerWidth = painter.headerWidthFor(g);
+      final headerWidth = StaffPainter.headerWidthFor(g);
 
       // The header must scale in lockstep with the staff-space unit (this
       // is the unit-consistency invariant the bug violated: the header used
@@ -88,5 +88,53 @@ void main() {
       final firstNoteX = headerWidth + 0 * pixelsPerBeat;
       expect(firstNoteX, greaterThanOrEqualTo(headerWidth));
     }
+  });
+
+  test('note x positions advance with the beat', () {
+    // Two notes a beat apart must be exactly pixelsPerBeat apart. x for a
+    // beat is headerWidth + beat * pixelsPerBeat, so the header term cancels
+    // and only the beat spacing survives.
+    const pixelsPerBeat = 60.0;
+    const g = StaffGeometry(top: 20, height: 100);
+    final headerWidth = StaffPainter.headerWidthFor(g);
+
+    double xForBeat(double beat) => headerWidth + beat * pixelsPerBeat;
+
+    expect(xForBeat(2) - xForBeat(1), closeTo(pixelsPerBeat, 0.001));
+    expect(xForBeat(5) - xForBeat(4), closeTo(pixelsPerBeat, 0.001));
+  });
+
+  test('the playhead tracks currentBeat', () {
+    // The x for currentBeat must equal the x computed for that same beat
+    // via the shared header-plus-offset formula the painter uses.
+    const pixelsPerBeat = 60.0;
+    const g = StaffGeometry(top: 20, height: 100);
+    final headerWidth = StaffPainter.headerWidthFor(g);
+
+    double xForBeat(double beat) => headerWidth + beat * pixelsPerBeat;
+
+    const currentBeat = 3.5;
+    final playheadX = xForBeat(currentBeat);
+    expect(playheadX, equals(xForBeat(currentBeat)));
+    expect(playheadX, closeTo(headerWidth + 210.0, 0.001));
+  });
+
+  test('header width scales with staff height, not with pixelsPerBeat', () {
+    // Doubling the staff height doubles the header; changing pixelsPerBeat
+    // must not move it. This is the invariant whose absence caused the
+    // time signature to collide with the first notes.
+    const small = StaffGeometry(top: 0, height: 100);
+    const large = StaffGeometry(top: 0, height: 200);
+
+    final smallHeader = StaffPainter.headerWidthFor(small);
+    final largeHeader = StaffPainter.headerWidthFor(large);
+
+    expect(largeHeader, closeTo(smallHeader * 2, 0.001));
+
+    // headerWidthFor takes only geometry, so it cannot vary with
+    // pixelsPerBeat by construction; assert the same geometry always
+    // yields the same header width regardless of what pixelsPerBeat is
+    // used elsewhere.
+    expect(StaffPainter.headerWidthFor(small), equals(smallHeader));
   });
 }

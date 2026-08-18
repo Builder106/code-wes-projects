@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:piano_tool/models/engine_models.dart';
@@ -55,24 +56,40 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('golden: single staff, light', (tester) async {
-    await _pinSurfaceSize(tester);
-    await tester.pumpWidget(_harness(PianoTheme.light(), const [_treble]));
-    await expectLater(find.byType(StaffView),
-        matchesGoldenFile('goldens/staff_single_light.png'));
-  });
+  // Goldens are byte-exact and font rasterisation differs by host, so these
+  // are generated and verified on Linux (where CI runs) only. They are
+  // skipped elsewhere rather than run with a fuzzy comparator, to keep the
+  // checked-in PNGs an exact, unambiguous reference.
+  testWidgets(
+    'golden: single staff, light',
+    (tester) async {
+      await _pinSurfaceSize(tester);
+      await tester.pumpWidget(_harness(PianoTheme.light(), const [_treble]));
+      await expectLater(find.byType(StaffView),
+          matchesGoldenFile('goldens/staff_single_light.png'));
+    },
+    skip: !Platform.isLinux,
+  );
 
-  testWidgets('golden: single staff, dark', (tester) async {
-    await _pinSurfaceSize(tester);
-    await tester.pumpWidget(_harness(PianoTheme.dark(), const [_treble]));
-    await expectLater(find.byType(StaffView),
-        matchesGoldenFile('goldens/staff_single_dark.png'));
-  });
+  testWidgets(
+    'golden: single staff, dark',
+    (tester) async {
+      await _pinSurfaceSize(tester);
+      await tester.pumpWidget(_harness(PianoTheme.dark(), const [_treble]));
+      await expectLater(find.byType(StaffView),
+          matchesGoldenFile('goldens/staff_single_dark.png'));
+    },
+    skip: !Platform.isLinux,
+  );
 
-  testWidgets('golden: grand staff, light', (tester) async {
-    await _pinSurfaceSize(tester);
-    await tester.pumpWidget(_harness(PianoTheme.light(), const [_treble, _bass]));
-    await expectLater(find.byType(StaffView),
-        matchesGoldenFile('goldens/staff_grand_light.png'));
-  });
+  testWidgets(
+    'golden: grand staff, light',
+    (tester) async {
+      await _pinSurfaceSize(tester);
+      await tester.pumpWidget(_harness(PianoTheme.light(), const [_treble, _bass]));
+      await expectLater(find.byType(StaffView),
+          matchesGoldenFile('goldens/staff_grand_light.png'));
+    },
+    skip: !Platform.isLinux,
+  );
 }

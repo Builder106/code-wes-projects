@@ -133,9 +133,10 @@ low x-height would hurt legibility.
 IBM Plex Sans 400/500/600 carries everything else, and every metric sets
 `FontFeature.tabularFigures()` so numbers hold their columns as they change.
 
-Both live in the `google_fonts` package, so neither needs bundling. A mono
+Both are bundled under `assets/fonts/` rather than pulled from the
+`google_fonts` package, so there is no network fetch on first launch. A mono
 outlier for the metrics was considered and cut: Plex Sans has real tabular
-figures, so a third font download on a mobile app buys nothing.
+figures, so a third bundled font buys nothing.
 
 This replaces `GoogleFonts.interTextTheme()` (`lib/main.dart:25` and `:34`).
 Inter is the most on-distribution font available and reads as un-chosen.
@@ -314,5 +315,6 @@ visual risk. Goldens are the mitigation.
 created and populated in the same change that references it, or the build
 breaks.
 
-The project is not a git repository. There is no history to fall back on if the
-rewrite goes wrong, and no way to review the change as a diff.
+The project is now a git repository, but the branch carries the whole rewrite
+as a single line of commits. There is limited history to fall back on if
+something goes wrong, so each change should stay reviewable as its own diff.

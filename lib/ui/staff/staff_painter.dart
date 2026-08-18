@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show listEquals, visibleForTesting;
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/rendering.dart';
 import '../../models/engine_models.dart';
 import '../theme/tokens.dart';
@@ -35,7 +35,7 @@ class StaffPainter extends CustomPainter {
   /// themselves, so the two can never drift apart at different scales.
   static const double _headerSpaces = 8.5;
 
-  double _headerWidth(StaffGeometry g) => g.space * _headerSpaces;
+  static double _headerWidth(StaffGeometry g) => g.space * _headerSpaces;
 
   /// Whether to draw the round cap at the top of the playhead line. In a
   /// grand staff each system draws its own playhead line, so only the first
@@ -102,10 +102,12 @@ class StaffPainter extends CustomPainter {
   double _xForBeat(double beat, StaffGeometry g) =>
       _headerWidth(g) + beat * pixelsPerBeat;
 
-  /// Exposed for tests: the pixel x where notes may begin, at a given
-  /// staff geometry. Notes must never start before this.
-  @visibleForTesting
-  double headerWidthFor(StaffGeometry g) => _headerWidth(g);
+  /// The pixel x where notes may begin, at a given staff geometry. Notes
+  /// must never start before this. Public (and static, since it needs no
+  /// painter instance) so scrolling containers such as [HorizontalStaff]
+  /// can account for the header when sizing and hit-testing; there is one
+  /// definition of the header width, shared by painting, layout, and tests.
+  static double headerWidthFor(StaffGeometry g) => _headerWidth(g);
 
   static int _clefCodepoint(Clef clef) =>
       switch (clef) { Clef.treble => 0xE050, Clef.bass => 0xE062 };
