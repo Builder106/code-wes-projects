@@ -1,42 +1,20 @@
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:riverpod/riverpod.dart';
 import '../models/level_models.dart';
 
-/// Repository for loading and managing levels/stages
+/// Repository for loading and managing levels/stages.
+///
+/// Levels are defined in Dart, in [_loadBuiltInLevels] below. There is no
+/// JSON asset pipeline: an earlier version read `manifest.json` and
+/// `stages.json` from `assets/levels/`, neither of which ever existed, and
+/// silently fell back to these same built-in levels whenever that read
+/// failed -- which was every time. Do not go looking for a JSON loader; there
+/// isn't one.
 class LevelRepository {
   final Map<String, StageModel> _stages = {};
   final Map<String, LevelModel> _levels = {};
 
   LevelRepository() {
     _loadBuiltInLevels();
-  }
-
-  /// Load all levels from assets
-  Future<void> loadAll() async {
-    try {
-      final manifestJson = await rootBundle.loadString('assets/levels/manifest.json');
-      final manifest = jsonDecode(manifestJson) as Map<String, dynamic>;
-
-      for (final entry in manifest.entries) {
-        final levelPath = 'assets/levels/${entry.value}';
-        final levelJson = await rootBundle.loadString(levelPath);
-        final levelData = jsonDecode(levelJson) as Map<String, dynamic>;
-        final level = LevelModel.fromJson(levelData);
-        _levels[level.id] = level;
-      }
-
-      // Load stages
-      final stagesJson = await rootBundle.loadString('assets/levels/stages.json');
-      final stagesData = jsonDecode(stagesJson) as List<dynamic>;
-      for (final stageData in stagesData) {
-        final stage = StageModel.fromJson(stageData as Map<String, dynamic>);
-        _stages[stage.id] = stage;
-      }
-    } catch (e) {
-      // Fallback to built-in levels if assets not found
-      _loadBuiltInLevels();
-    }
   }
 
   /// Load built-in levels as fallback
@@ -263,9 +241,4 @@ class LevelRepository {
 }
 
 /// Riverpod provider for the level repository
-final levelRepositoryProvider = Provider<LevelRepository>((ref) {
-  final repo = LevelRepository();
-  // Load asynchronously
-  repo.loadAll();
-  return repo;
-});
+final levelRepositoryProvider = Provider<LevelRepository>((ref) => LevelRepository());

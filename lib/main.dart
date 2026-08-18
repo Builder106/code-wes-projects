@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'ui/practice/practice_screen.dart';
 import 'ui/theme/app_theme.dart';
-import 'ui/game/game_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class PianoToolApp extends ConsumerWidget {
       theme: PianoTheme.light(),
       darkTheme: PianoTheme.dark(),
       themeMode: ThemeMode.system,
-      home: const GameScreen(),
+      home: const PracticeScreen(stageId: 'stage_1'),
     );
   }
 }

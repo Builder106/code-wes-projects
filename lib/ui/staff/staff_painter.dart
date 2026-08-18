@@ -138,9 +138,9 @@ class StaffPainter extends CustomPainter {
 
   /// The pixel x where notes may begin, at a given staff geometry. Notes
   /// must never start before this. Public (and static, since it needs no
-  /// painter instance) so scrolling containers such as [HorizontalStaff]
-  /// can account for the header when sizing and hit-testing; there is one
-  /// definition of the header width, shared by painting, layout, and tests.
+  /// painter instance) so a scrolling container can account for the header
+  /// when sizing and hit-testing; there is one definition of the header
+  /// width, shared by painting, layout, and tests.
   static double headerWidthFor(StaffGeometry g) => _headerWidth(g);
 
   static int _clefCodepoint(Clef clef) =>
