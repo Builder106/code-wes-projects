@@ -160,7 +160,6 @@ class _HorizontalStaffState extends State<HorizontalStaff>
                     .toDouble(),
                 beatsPerMeasure: widget.level.beatsPerMeasure,
                 pixelsPerBeat: widget.pixelsPerBeat,
-                leadingBeats: 0,
               ),
             ),
           ),

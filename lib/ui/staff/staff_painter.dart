@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show listEquals;
+import 'package:flutter/foundation.dart' show listEquals, visibleForTesting;
 import 'package:flutter/rendering.dart';
 import '../../models/engine_models.dart';
 import '../theme/tokens.dart';
@@ -17,7 +17,7 @@ class StaffPainter extends CustomPainter {
     required this.totalBeats,
     required this.beatsPerMeasure,
     required this.pixelsPerBeat,
-    required this.leadingBeats,
+    this.showPlayheadCap = true,
   });
 
   final Clef clef;
@@ -28,8 +28,19 @@ class StaffPainter extends CustomPainter {
   final int beatsPerMeasure;
   final double pixelsPerBeat;
 
-  /// Horizontal room reserved for the clef and time signature.
-  final double leadingBeats;
+  /// Horizontal room the clef and time signature occupy, in staff-spaces.
+  /// Notes begin after this, so the header can never overlap the music at
+  /// any staff size. Staying in staff-spaces (rather than a fixed pixel or
+  /// beat offset) keeps this in the same unit as the header glyphs
+  /// themselves, so the two can never drift apart at different scales.
+  static const double _headerSpaces = 8.5;
+
+  double _headerWidth(StaffGeometry g) => g.space * _headerSpaces;
+
+  /// Whether to draw the round cap at the top of the playhead line. In a
+  /// grand staff each system draws its own playhead line, so only the first
+  /// system should draw the cap to avoid two dots stacking.
+  final bool showPlayheadCap;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -51,7 +62,7 @@ class StaffPainter extends CustomPainter {
       ..color = colors.staff.withValues(alpha: 0.55)
       ..strokeWidth = 1.0;
     for (var beat = beatsPerMeasure; beat <= totalBeats; beat += beatsPerMeasure) {
-      final x = _xForBeat(beat.toDouble());
+      final x = _xForBeat(beat.toDouble(), g);
       canvas.drawLine(Offset(x, g.topLineY), Offset(x, g.bottomLineY), barPaint);
     }
 
@@ -61,7 +72,7 @@ class StaffPainter extends CustomPainter {
     _paintTimeSignature(canvas, g);
 
     for (final note in notes) {
-      final x = _xForBeat(note.startBeat);
+      final x = _xForBeat(note.startBeat, g);
       final y = g.yForMidi(note.midi, clef);
 
       for (final ledgerY in g.ledgerLinesFor(note.midi, clef)) {
@@ -77,16 +88,24 @@ class StaffPainter extends CustomPainter {
           stemDown: y < g.lineY(2));
     }
 
-    final playheadX = _xForBeat(currentBeat);
+    final playheadX = _xForBeat(currentBeat, g);
     final playheadPaint = Paint()
       ..color = colors.accent
       ..strokeWidth = 1.5;
     canvas.drawLine(
         Offset(playheadX, 0), Offset(playheadX, size.height), playheadPaint);
-    canvas.drawCircle(Offset(playheadX, 0), 3.5, Paint()..color = colors.accent);
+    if (showPlayheadCap) {
+      canvas.drawCircle(Offset(playheadX, 0), 3.5, Paint()..color = colors.accent);
+    }
   }
 
-  double _xForBeat(double beat) => (beat + leadingBeats) * pixelsPerBeat;
+  double _xForBeat(double beat, StaffGeometry g) =>
+      _headerWidth(g) + beat * pixelsPerBeat;
+
+  /// Exposed for tests: the pixel x where notes may begin, at a given
+  /// staff geometry. Notes must never start before this.
+  @visibleForTesting
+  double headerWidthFor(StaffGeometry g) => _headerWidth(g);
 
   static int _clefCodepoint(Clef clef) =>
       switch (clef) { Clef.treble => 0xE050, Clef.bass => 0xE062 };
@@ -114,12 +133,17 @@ class StaffPainter extends CustomPainter {
       height: 0.88,
       color: colors.ink,
     );
+    // The numerator fills the upper half of the staff, the denominator the
+    // lower half; each glyph is centred, both horizontally and vertically,
+    // on its half's midline.
     for (final (i, digit) in ['$beatsPerMeasure', '4'].indexed) {
       final painter = TextPainter(
         text: TextSpan(text: digit, style: style),
         textDirection: TextDirection.ltr,
       )..layout();
-      painter.paint(canvas, Offset(x, g.lineY(i == 0 ? 0 : 2)));
+      final centerY = g.lineY(i == 0 ? 1 : 3);
+      painter.paint(
+          canvas, Offset(x - painter.width / 2, centerY - painter.height / 2));
     }
   }
 
@@ -129,7 +153,7 @@ class StaffPainter extends CustomPainter {
       old.clef != clef ||
       old.colors != colors ||
       old.pixelsPerBeat != pixelsPerBeat ||
-      old.leadingBeats != leadingBeats ||
+      old.showPlayheadCap != showPlayheadCap ||
       old.beatsPerMeasure != beatsPerMeasure ||
       old.totalBeats != totalBeats ||
       !listEquals(old.notes, notes);
