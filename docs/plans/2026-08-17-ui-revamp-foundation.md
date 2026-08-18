@@ -777,8 +777,21 @@ Pure Dart, no widgets. This is the module that makes a grand staff free.
 - Test: `test/ui/staff/staff_geometry_test.dart`
 
 **Interfaces:**
-- Consumes: `Clef` from `lib/models/level_models.dart`.
-- Produces: `StaffGeometry` with `const StaffGeometry({required double top, required double height})`; getters `space`, `lineY(int index)`, `topLineY`, `bottomLineY`; methods `yForMidi(int midi, Clef clef)`, `ledgerLinesFor(int midi, Clef clef)`, `noteheadSize`, `stemLength`, `timeSignatureFontSize`, `clefFontSize(Clef)`, `clefCenterY`.
+- Consumes: nothing.
+- Produces: `enum Clef { treble, bass }`; `StaffGeometry` with `const StaffGeometry({required double top, required double height})`; getters `space`, `lineY(int index)`, `topLineY`, `bottomLineY`; methods `yForMidi(int midi, Clef clef)`, `ledgerLinesFor(int midi, Clef clef)`, `noteheadSize`, `stemLength`, `timeSignatureFontSize`, `clefFontSize(Clef)`, `clefCenterY(Clef)`.
+
+**Correction to the spec.** The spec says a level "declares one `clef`". That is
+wrong: `lib/models/level_models.dart` has no clef type at all. `LevelModel`
+carries `clefOctave` (an int) and `transpose`, and the current painter hardcodes
+a treble clef. The README documents a level format that does not match the
+models either.
+
+`Clef` is therefore defined here, in the UI layer, as the rendering concept it
+is. `StaffView` takes an explicit list of systems and each names its own clef,
+so the caller decides what to draw. Adding a `clef` field to `LevelModel`
+belongs to Plan 2, where the level format and the screen that reads it are both
+in scope. This keeps Plan 1's "models untouched" constraint honest and blocks
+nothing.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -786,7 +799,6 @@ Create `test/ui/staff/staff_geometry_test.dart`:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:piano_tool/models/level_models.dart';
 import 'package:piano_tool/ui/staff/staff_geometry.dart';
 
 void main() {
@@ -812,8 +824,9 @@ void main() {
       expect(g.yForMidi(77, Clef.treble), 10);
     });
     test('C4 sits one ledger line below the staff', () {
-      expect(g.yForMidi(60, Clef.treble), 100);
-      expect(g.ledgerLinesFor(60, Clef.treble), [100.0]);
+      // C4 is 2 diatonic steps below E4, so one full space below the bottom line.
+      expect(g.yForMidi(60, Clef.treble), 110);
+      expect(g.ledgerLinesFor(60, Clef.treble), [110.0]);
     });
     test('a note inside the staff needs no ledger lines', () {
       expect(g.ledgerLinesFor(71, Clef.treble), isEmpty);
@@ -832,8 +845,9 @@ void main() {
       expect(g.yForMidi(57, Clef.bass), 10);
     });
     test('C4 sits one ledger line above the staff', () {
-      expect(g.yForMidi(60, Clef.bass), 0);
-      expect(g.ledgerLinesFor(60, Clef.bass), [0.0]);
+      // C4 is 10 diatonic steps above G2, one full space above the top line.
+      expect(g.yForMidi(60, Clef.bass), -10);
+      expect(g.ledgerLinesFor(60, Clef.bass), [-10.0]);
     });
   });
 
@@ -861,13 +875,13 @@ verify-on-vm "/Users/yinkavaughan/My Drive (yvaughan@wesleyan.edu)/CS/projects/p
 
 Expected: FAIL, `Target of URI doesn't exist: '.../staff_geometry.dart'`.
 
-- [ ] **Step 3: Confirm the Clef enum's shape before implementing**
+- [ ] **Step 3: Confirm no Clef type already exists**
 
 ```bash
-rg -n 'enum Clef' -A 6 lib/models/level_models.dart
+rg -n 'enum Clef|class Clef' lib/ --glob '!*.freezed.dart' --glob '!*.g.dart'
 ```
 
-If the values are not exactly `treble` and `bass`, use the actual names in the implementation and update the test to match.
+Expected: no matches. `Clef` is introduced by this task. If a match appears, stop and report it rather than defining a second one.
 
 - [ ] **Step 4: Write the implementation**
 
@@ -875,8 +889,14 @@ Create `lib/ui/staff/staff_geometry.dart`:
 
 ```dart
 import 'dart:ui' show Size;
-import 'package:meta/meta.dart';
-import '../../models/level_models.dart';
+import 'package:flutter/foundation.dart' show immutable;
+
+/// Which clef a staff is drawn in.
+///
+/// This is a rendering concept and lives in the UI layer. The level models
+/// carry no clef today; `StaffView` takes an explicit list of systems and each
+/// one names its clef, so the caller decides what gets drawn.
+enum Clef { treble, bass }
 
 /// Staff measurements derived from the staff's own height.
 ///
@@ -955,7 +975,7 @@ class StaffGeometry {
 verify-on-vm "/Users/yinkavaughan/My Drive (yvaughan@wesleyan.edu)/CS/projects/personal/piano-tool" "flutter test test/ui/staff/staff_geometry_test.dart"
 ```
 
-Expected: PASS, 12 tests. If `meta` is not already a direct dependency, replace the `package:meta/meta.dart` import with `package:flutter/foundation.dart`, which re-exports `@immutable`.
+Expected: PASS, 12 tests.
 
 - [ ] **Step 6: Commit**
 
@@ -980,7 +1000,14 @@ free: halve the band and every glyph follows."
 - Rewrite: `test/staff_painter_test.dart`
 
 **Interfaces:**
-- Consumes: `StaffGeometry` from Task 5; `PianoColors` from Task 2; `NoteState` from `lib/models/engine_models.dart`.
+- Consumes: `StaffGeometry` and `Clef` from Task 5; `PianoColors` from Task 2; `NoteState` from `lib/models/engine_models.dart`.
+
+**Correction to the spec.** `NoteState` has SIX values, not four:
+`upcoming, active, hitPerfect, hitGood, hitOkay, missed`. There is no
+`NoteState.hit`. The spec's four-row table describes four *visual* states, so
+the three hit gradations all map to the same filled glyph. Encoding hit quality
+visually is a scoring-feedback decision the spec never made, and inventing one
+here would be scope creep; it is noted for Plan 2.
 - Produces: `NoteGlyph.paint(Canvas, Offset, StaffGeometry, NoteState, PianoColors, {bool stemDown})`; `NoteGlyphStyle.forState(NoteState, PianoColors)` returning a record `({Color color, bool filled, bool ringed, bool struck})`.
 
 - [ ] **Step 1: Write the failing test for glyph style**
@@ -996,41 +1023,63 @@ import 'package:piano_tool/ui/theme/tokens.dart';
 void main() {
   final c = PianoColors.light();
 
-  test('every state is distinguishable without colour', () {
-    final shapes = <String>{};
-    for (final s in NoteState.values) {
-      final st = NoteGlyphStyle.forState(s, c);
-      shapes.add('${st.filled}-${st.ringed}-${st.struck}');
-    }
-    // Four states, four distinct shape signatures.
-    expect(shapes.length, NoteState.values.length);
+  String sig(NoteState s) {
+    final st = NoteGlyphStyle.forState(s, c);
+    return '${st.filled}-${st.ringed}-${st.struck}';
+  }
+
+  const hits = [NoteState.hitPerfect, NoteState.hitGood, NoteState.hitOkay];
+
+  test('six states collapse to four distinct shapes', () {
+    expect(NoteState.values.map(sig).toSet().length, 4);
+  });
+
+  test('upcoming, active, hit, and missed are all shape-distinct', () {
+    final four = {
+      sig(NoteState.upcoming),
+      sig(NoteState.active),
+      sig(NoteState.hitPerfect),
+      sig(NoteState.missed),
+    };
+    expect(four.length, 4);
+  });
+
+  test('all three hit gradations render identically', () {
+    expect(hits.map(sig).toSet().length, 1);
   });
 
   test('hit is filled and missed is hollow', () {
-    expect(NoteGlyphStyle.forState(NoteState.hit, c).filled, isTrue);
+    for (final h in hits) {
+      expect(NoteGlyphStyle.forState(h, c).filled, isTrue);
+    }
     expect(NoteGlyphStyle.forState(NoteState.missed, c).filled, isFalse);
   });
 
   test('missed carries a strike, hit does not', () {
     expect(NoteGlyphStyle.forState(NoteState.missed, c).struck, isTrue);
-    expect(NoteGlyphStyle.forState(NoteState.hit, c).struck, isFalse);
+    for (final h in hits) {
+      expect(NoteGlyphStyle.forState(h, c).struck, isFalse);
+    }
   });
 
   test('states map to their token colours', () {
-    expect(NoteGlyphStyle.forState(NoteState.hit, c).color, c.success);
+    for (final h in hits) {
+      expect(NoteGlyphStyle.forState(h, c).color, c.success);
+    }
     expect(NoteGlyphStyle.forState(NoteState.missed, c).color, c.error);
     expect(NoteGlyphStyle.forState(NoteState.upcoming, c).color, c.muted);
+    expect(NoteGlyphStyle.forState(NoteState.active, c).color, c.accent);
   });
 }
 ```
 
-- [ ] **Step 2: Check the NoteState enum before implementing**
+- [ ] **Step 2: Confirm the NoteState enum**
 
 ```bash
 rg -n 'enum NoteState' -A 8 lib/models/engine_models.dart
 ```
 
-The spec assumes four states: upcoming, active/due, hit, missed. Use the actual value names. If there is no "due" state, map the fourth signature to whichever value represents the currently-playing note.
+Expected exactly: `upcoming, active, hitPerfect, hitGood, hitOkay, missed`. If it differs, stop and report rather than guessing a mapping.
 
 - [ ] **Step 3: Run test to verify it fails**
 
@@ -1061,7 +1110,12 @@ typedef GlyphStyle = ({Color color, bool filled, bool ringed, bool struck});
 abstract final class NoteGlyphStyle {
   static GlyphStyle forState(NoteState state, PianoColors c) =>
       switch (state) {
-        NoteState.hit => (color: c.success, filled: true, ringed: false, struck: false),
+        // All three hit gradations share one glyph. Encoding hit quality
+        // visually is a scoring-feedback decision this plan does not make.
+        NoteState.hitPerfect ||
+        NoteState.hitGood ||
+        NoteState.hitOkay =>
+          (color: c.success, filled: true, ringed: false, struck: false),
         NoteState.missed => (color: c.error, filled: false, ringed: false, struck: true),
         NoteState.active => (color: c.accent, filled: true, ringed: true, struck: false),
         NoteState.upcoming => (color: c.muted, filled: false, ringed: false, struck: false),
@@ -1149,7 +1203,6 @@ Replace `lib/ui/staff/staff_painter.dart` entirely. It draws one system: staff l
 
 ```dart
 import 'package:flutter/rendering.dart';
-import '../../models/level_models.dart';
 import '../../models/engine_models.dart';
 import '../theme/tokens.dart';
 import 'note_glyph.dart';
@@ -1289,15 +1342,15 @@ Delete `test/staff_painter_test.dart` and create `test/ui/staff/staff_painter_te
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:piano_tool/models/level_models.dart';
 import 'package:piano_tool/models/engine_models.dart';
+import 'package:piano_tool/ui/staff/staff_geometry.dart';
 import 'package:piano_tool/ui/staff/staff_painter.dart';
 import 'package:piano_tool/ui/theme/tokens.dart';
 
 StaffPainter _painter({Clef clef = Clef.treble, double beat = 0}) => StaffPainter(
       clef: clef,
       notes: const [
-        (midi: 60, startBeat: 0, state: NoteState.hit),
+        (midi: 60, startBeat: 0, state: NoteState.hitPerfect),
         (midi: 64, startBeat: 1, state: NoteState.missed),
         (midi: 67, startBeat: 2, state: NoteState.active),
         (midi: 72, startBeat: 3, state: NoteState.upcoming),
@@ -1372,20 +1425,20 @@ Create `test/ui/staff/staff_view_test.dart`:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:piano_tool/models/level_models.dart';
 import 'package:piano_tool/models/engine_models.dart';
+import 'package:piano_tool/ui/staff/staff_geometry.dart';
 import 'package:piano_tool/ui/staff/staff_painter.dart';
 import 'package:piano_tool/ui/staff/staff_view.dart';
 import 'package:piano_tool/ui/theme/app_theme.dart';
 
 const _treble = (clef: Clef.treble, notes: <PlacedNote>[
-  (midi: 60, startBeat: 0, state: NoteState.hit),
+  (midi: 60, startBeat: 0, state: NoteState.hitPerfect),
   (midi: 64, startBeat: 1, state: NoteState.missed),
   (midi: 67, startBeat: 2, state: NoteState.active),
   (midi: 72, startBeat: 3, state: NoteState.upcoming),
 ]);
 const _bass = (clef: Clef.bass, notes: <PlacedNote>[
-  (midi: 48, startBeat: 0, state: NoteState.hit),
+  (midi: 48, startBeat: 0, state: NoteState.hitGood),
   (midi: 55, startBeat: 2, state: NoteState.upcoming),
 ]);
 
@@ -1452,8 +1505,8 @@ Create `lib/ui/staff/staff_view.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
-import '../../models/level_models.dart';
 import '../theme/app_theme.dart';
+import 'staff_geometry.dart';
 import 'staff_painter.dart';
 
 typedef StaffSystem = ({Clef clef, List<PlacedNote> notes});
