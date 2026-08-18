@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' show Size;
 import 'package:flutter/foundation.dart' show immutable;
 
@@ -76,4 +77,46 @@ class StaffGeometry {
     }
     return lines;
   }
+}
+
+/// Ceiling on the drawn staff height. A five-line staff much taller than
+/// this stops reading as notation and starts reading as a diagram: the clef
+/// alone would out-measure the keyboard below it.
+const double kDefaultMaxStaffHeight = 88;
+
+/// The fraction of a band the staff itself occupies, leaving room above and
+/// below for ledger lines.
+const double kStaffBandFraction = 0.56;
+
+/// The staff for a band of [bandHeight], never taller than [maxStaffHeight]
+/// and always centred in the band it was given.
+///
+/// One definition, shared by the painter and by anything that needs to know
+/// where the staff will land. Because every glyph is sized in staff-spaces,
+/// capping the height here shrinks the clef, the time signature, the
+/// noteheads and the stems together; there is no second path and no
+/// per-glyph exception.
+StaffGeometry staffGeometryForBand({
+  required double bandHeight,
+  required double maxStaffHeight,
+}) {
+  final height = math.min(bandHeight * kStaffBandFraction, maxStaffHeight);
+  return StaffGeometry(top: (bandHeight - height) / 2, height: height);
+}
+
+/// Pixels the staff content is shifted left so the playhead stays visible.
+///
+/// The playhead sits still at [anchorFraction] of the viewport while the music
+/// moves under it, which is what a scrolling score does. Clamped at both ends:
+/// no scrolling before the anchor is reached, and none past the final beat.
+double staffScrollOffset({
+  required double playheadX,
+  required double viewportWidth,
+  required double contentWidth,
+  double anchorFraction = 0.3,
+}) {
+  final maxOffset = contentWidth - viewportWidth;
+  if (maxOffset <= 0) return 0;
+  final anchor = viewportWidth * anchorFraction;
+  return (playheadX - anchor).clamp(0.0, maxOffset);
 }

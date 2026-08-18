@@ -17,6 +17,7 @@ class StaffPainter extends CustomPainter {
     required this.totalBeats,
     required this.beatsPerMeasure,
     required this.pixelsPerBeat,
+    this.maxStaffHeight = kDefaultMaxStaffHeight,
     this.showPlayheadCap = true,
   });
 
@@ -27,6 +28,9 @@ class StaffPainter extends CustomPainter {
   final double totalBeats;
   final int beatsPerMeasure;
   final double pixelsPerBeat;
+
+  /// Ceiling on the drawn staff height, whatever band the painter is given.
+  final double maxStaffHeight;
 
   /// Horizontal room the clef and time signature occupy, in staff-spaces.
   /// Notes begin after this, so the header can never overlap the music at
@@ -42,12 +46,19 @@ class StaffPainter extends CustomPainter {
   /// system should draw the cap to avoid two dots stacking.
   final bool showPlayheadCap;
 
+  /// The geometry this painter would use in a band of [bandHeight]. The
+  /// staff takes the middle of the band, capped so a tall band gives more
+  /// air rather than a bigger clef.
+  StaffGeometry geometryFor(double bandHeight) => staffGeometryForBand(
+      bandHeight: bandHeight, maxStaffHeight: maxStaffHeight);
+
+  /// Total width of the music, header included, at a given geometry.
+  double contentWidthFor(StaffGeometry g) =>
+      _headerWidth(g) + totalBeats * pixelsPerBeat + g.space * 2;
+
   @override
   void paint(Canvas canvas, Size size) {
-    // The staff occupies the middle 56% of the band, leaving room above and
-    // below for ledger lines.
-    final staffHeight = size.height * 0.56;
-    final g = StaffGeometry(top: (size.height - staffHeight) / 2, height: staffHeight);
+    final g = geometryFor(size.height);
 
     final linePaint = Paint()
       ..color = colors.staff
@@ -58,6 +69,27 @@ class StaffPainter extends CustomPainter {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
     }
 
+    // The music scrolls under a playhead pinned a third across the viewport,
+    // while the clef and time signature stay put at the left edge: they are
+    // the header, not part of the music. Clipping to the right of the header
+    // keeps scrolled notes from sliding out over it.
+    //
+    // Everything below is measured from the right edge of the header rather
+    // than from the left edge of the widget, because that is the strip the
+    // music actually gets. Anchoring in widget coordinates instead would put
+    // the anchor behind the clef on a narrow screen and scroll the opening
+    // notes out of sight before the piece had started.
+    final header = _headerWidth(g);
+    final offset = staffScrollOffset(
+      playheadX: _xForBeat(currentBeat, g) - header,
+      viewportWidth: size.width - header,
+      contentWidth: contentWidthFor(g) - header,
+    );
+
+    canvas.save();
+    canvas.clipRect(Rect.fromLTRB(header, 0, size.width, size.height));
+    canvas.translate(-offset, 0);
+
     final barPaint = Paint()
       ..color = colors.staff.withValues(alpha: 0.55)
       ..strokeWidth = 1.0;
@@ -65,11 +97,6 @@ class StaffPainter extends CustomPainter {
       final x = _xForBeat(beat.toDouble(), g);
       canvas.drawLine(Offset(x, g.topLineY), Offset(x, g.bottomLineY), barPaint);
     }
-
-    _paintGlyph(canvas, _clefCodepoint(clef), g.clefFontSize(clef),
-        Offset(g.space * 0.5, g.clefCenterY(clef)), colors.ink);
-
-    _paintTimeSignature(canvas, g);
 
     for (final note in notes) {
       final x = _xForBeat(note.startBeat, g);
@@ -97,6 +124,13 @@ class StaffPainter extends CustomPainter {
     if (showPlayheadCap) {
       canvas.drawCircle(Offset(playheadX, 0), 3.5, Paint()..color = colors.accent);
     }
+
+    canvas.restore();
+
+    _paintGlyph(canvas, _clefCodepoint(clef), g.clefFontSize(clef),
+        Offset(g.space * 0.5, g.clefCenterY(clef)), colors.ink);
+
+    _paintTimeSignature(canvas, g);
   }
 
   double _xForBeat(double beat, StaffGeometry g) =>
@@ -156,6 +190,7 @@ class StaffPainter extends CustomPainter {
       old.colors != colors ||
       old.pixelsPerBeat != pixelsPerBeat ||
       old.showPlayheadCap != showPlayheadCap ||
+      old.maxStaffHeight != maxStaffHeight ||
       old.beatsPerMeasure != beatsPerMeasure ||
       old.totalBeats != totalBeats ||
       !listEquals(old.notes, notes);

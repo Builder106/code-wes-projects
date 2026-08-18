@@ -43,6 +43,50 @@ Future<void> _pinSurfaceSize(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('the staff never grows past its cap in a tall band',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(740, 400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(MaterialApp(
+      theme: PianoTheme.light(),
+      home: const Scaffold(
+        body: SizedBox(
+          width: 740,
+          height: 400,
+          child: StaffView(
+            systems: [_treble],
+            currentBeat: 2,
+            totalBeats: 8,
+            beatsPerMeasure: 4,
+            pixelsPerBeat: 70,
+            maxStaffHeight: 120,
+          ),
+        ),
+      ),
+    ));
+
+    final view = tester.widget<StaffView>(find.byType(StaffView));
+    expect(tester.getSize(find.byType(StaffView)).height, 400);
+
+    // The painted staff, not the band, is what is capped: 400 * 0.56 would
+    // be 224, and a staff that tall makes a clef taller than the keyboard.
+    final g = view.geometryFor(400);
+    expect(g.height, 120);
+    // ...and it is centred in the band it was given.
+    expect(g.top, closeTo((400 - 120) / 2, 1e-9));
+  });
+
+  testWidgets('a short band still scales the staff down', (tester) async {
+    const view = StaffView(
+      systems: [_treble],
+      currentBeat: 0,
+      totalBeats: 8,
+      beatsPerMeasure: 4,
+      pixelsPerBeat: 70,
+    );
+    expect(view.geometryFor(100).height, closeTo(56, 1e-9));
+  });
+
   testWidgets('renders a single staff without overflow', (tester) async {
     await _pinSurfaceSize(tester);
     await tester.pumpWidget(_harness(PianoTheme.light(), const [_treble]));
