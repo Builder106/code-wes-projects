@@ -7,6 +7,7 @@ import '../keyboard/piano_keyboard_view.dart';
 import '../staff/staff_geometry.dart';
 import '../staff/staff_painter.dart';
 import '../staff/staff_view.dart';
+import 'mic_permission_gate.dart';
 import 'practice_hud.dart';
 import 'stage_controller.dart';
 import 'transport_column.dart';
@@ -60,34 +61,39 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Row(
-          children: [
-            _TransportPane(stageId: stageId),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  // The keyboard takes a fifth of the height, floored and
-                  // capped so it stays legible on a short screen without
-                  // eating a tall one.
-                  final keyboardHeight =
-                      (constraints.maxHeight * 0.21).clamp(64.0, 88.0);
+        // Without a microphone nothing can be scored, so the transport and the
+        // staff stay unreachable rather than pretending to listen.
+        child: MicPermissionGate(
+          child: Row(
+            children: [
+              _TransportPane(stageId: stageId),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // The keyboard takes a fifth of the height, floored and
+                    // capped so it stays legible on a short screen without
+                    // eating a tall one.
+                    final keyboardHeight =
+                        (constraints.maxHeight * 0.21).clamp(64.0, 88.0);
 
-                  return Column(
-                    children: [
-                      _HudPane(stageId: stageId, level: level),
-                      // The staff takes the remainder, so it grows on a larger
-                      // screen instead of leaving a dead band.
-                      Expanded(child: _StaffPane(stageId: stageId, level: level)),
-                      SizedBox(
-                        height: keyboardHeight,
-                        child: _KeyboardPane(stageId: stageId),
-                      ),
-                    ],
-                  );
-                },
+                    return Column(
+                      children: [
+                        _HudPane(stageId: stageId, level: level),
+                        // The staff takes the remainder, so it grows on a
+                        // larger screen instead of leaving a dead band.
+                        Expanded(
+                            child: _StaffPane(stageId: stageId, level: level)),
+                        SizedBox(
+                          height: keyboardHeight,
+                          child: _KeyboardPane(stageId: stageId),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -182,13 +188,14 @@ class _KeyboardPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // What the learner should be playing now. Sounding notes come from the
-    // microphone and are not wired here yet.
+    // What the learner should be playing now, against what the microphone is
+    // actually hearing.
     final due = {
       for (final note in _placedNotes(ref, stageId))
         if (note.state == NoteState.active) note.midi,
     };
-    return PianoKeyboardView(due: due);
+    final playing = ref.watch(soundingProvider(stageId));
+    return PianoKeyboardView(due: due, playing: playing);
   }
 }
 

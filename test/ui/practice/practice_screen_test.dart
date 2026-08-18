@@ -213,6 +213,9 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(container: container, child: _screen()),
     );
+    // The permission gate resolves a frame after the first build; the transport
+    // is not on screen until it does.
+    await tester.pump();
     await tester.tap(find.byIcon(Icons.play_arrow));
     await tester.pump();
     expect(container.read(engineStatusProvider('stage_1')),

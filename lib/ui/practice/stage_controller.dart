@@ -6,22 +6,31 @@ import '../../audio/audio_engine.dart';
 import '../../data/level_repository.dart';
 import '../../data/progress_repository.dart';
 import '../../engine/stage_engine.dart';
+import '../../models/audio_models.dart';
 import '../../models/engine_models.dart';
 import '../../models/level_models.dart';
+
+/// One engine for the whole app. Permission and the pitch stream both hang off
+/// it, so a single microphone is opened rather than one per provider.
+final audioEngineProvider = Provider<AudioEngine>((ref) {
+  final engine = AudioEngine();
+  ref.onDispose(engine.dispose);
+  return engine;
+});
 
 /// Whether the microphone was granted. Overridden in tests so the controller
 /// can run without hardware.
 final audioGrantedProvider = FutureProvider<bool>((ref) async {
-  final engine = AudioEngine();
+  final engine = ref.watch(audioEngineProvider);
   final granted = await engine.initialize();
-  if (granted) {
-    await engine.start();
-    ref.onDispose(engine.dispose);
-  } else {
-    await engine.dispose();
-  }
+  if (granted) await engine.start();
   return granted;
 });
+
+/// Detected pitches. The engine only produces events after [audioGrantedProvider]
+/// started it, so listening before permission is granted is simply quiet.
+final audioPitchStreamProvider = StreamProvider<PitchEvent>(
+    (ref) => ref.watch(audioEngineProvider).pitchStream);
 
 /// Alias kept for call sites that read microphone state by its UI-facing
 /// name rather than the underlying grant check.
@@ -38,6 +47,7 @@ class StageUiState {
     required this.accuracy,
     required this.status,
     required this.speed,
+    this.sounding = const {},
   });
 
   final LevelModel level;
@@ -48,6 +58,9 @@ class StageUiState {
   final double accuracy;
   final StageEngineStatus status;
   final double speed;
+
+  /// MIDI notes the microphone is hearing right now.
+  final Set<int> sounding;
 
   double get progress {
     final total = level.totalMeasures * level.beatsPerMeasure;
@@ -61,6 +74,7 @@ class StageUiState {
     double? accuracy,
     StageEngineStatus? status,
     double? speed,
+    Set<int>? sounding,
   }) =>
       StageUiState(
         level: level,
@@ -71,6 +85,7 @@ class StageUiState {
         accuracy: accuracy ?? this.accuracy,
         status: status ?? this.status,
         speed: speed ?? this.speed,
+        sounding: sounding ?? this.sounding,
       );
 }
 
@@ -107,6 +122,15 @@ class StageController extends StateNotifier<StageUiState> {
   /// Halts and holds position. Distinct from [replay], which rewinds.
   void stop() {
     _engine.stop();
+    _sync();
+    // Nothing is being listened for once stopped, so no key should stay lit.
+    state = state.copyWith(sounding: const {});
+  }
+
+  /// A detected pitch both scores against the level and lights the keyboard.
+  void onPitch(PitchEvent event) {
+    _engine.processPitchEvent(event);
+    state = state.copyWith(sounding: {event.midiNote});
     _sync();
   }
 
@@ -172,7 +196,7 @@ final stageControllerProvider =
     for (final m in stage.level.measures) ...m.notes,
   ]..sort((a, b) => a.startBeat.compareTo(b.startBeat));
 
-  return StageController(
+  final controller = StageController(
     engine,
     stageId,
     ref.read(progressRepositoryProvider),
@@ -187,6 +211,14 @@ final stageControllerProvider =
       speed: 1.0,
     ),
   );
+
+  // Pitch events only flow once permission was granted; the gate makes sure
+  // the screen is not reachable before then.
+  ref.listen(audioPitchStreamProvider, (_, next) {
+    next.whenData(controller.onPitch);
+  });
+
+  return controller;
 });
 
 // Narrow slices. A widget watching one of these does not rebuild when an
@@ -203,3 +235,5 @@ final noteStatesProvider = Provider.family<List<NoteState>, String>(
     (ref, id) => ref.watch(stageControllerProvider(id).select((s) => s.noteStates)));
 final playbackSpeedProvider = Provider.family<double, String>(
     (ref, id) => ref.watch(stageControllerProvider(id).select((s) => s.speed)));
+final soundingProvider = Provider.family<Set<int>, String>(
+    (ref, id) => ref.watch(stageControllerProvider(id).select((s) => s.sounding)));
