@@ -14,6 +14,10 @@ class PracticeHud extends StatelessWidget {
     this.onBack,
   });
 
+  /// The header's resting height. A floor, not a fixed size: at a large text
+  /// scale the row is allowed to grow rather than clip its own content.
+  static const double minHeight = 44;
+
   final String title;
   final int tempo;
   final int score;
@@ -30,8 +34,11 @@ class PracticeHud extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: PianoSpacing.sm),
+          constraints: const BoxConstraints(minHeight: minHeight),
+          padding: const EdgeInsets.symmetric(
+            horizontal: PianoSpacing.sm,
+            vertical: PianoSpacing.xs2,
+          ),
           decoration: BoxDecoration(
             color: colors.paper2,
             border: Border(bottom: BorderSide(color: colors.rule)),
@@ -45,9 +52,11 @@ class PracticeHud extends StatelessWidget {
                   icon: const Icon(Icons.chevron_left),
                   tooltip: 'Back',
                 ),
-              // The title yields, never the metrics. This is what stops the
-              // header collapsing to "C ..." on a narrow screen.
+              // Both sides are flex children, so neither can push the other off
+              // the axis. The title ellipsizes and the metrics scale down; the
+              // row cannot overflow at any text scale.
               Expanded(
+                flex: 2,
                 child: Text(
                   title,
                   maxLines: 1,
@@ -56,11 +65,25 @@ class PracticeHud extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: PianoSpacing.sm),
-              _Metric(label: 'BPM', value: '$tempo'),
-              const SizedBox(width: PianoSpacing.md),
-              _Metric(label: 'Score', value: '$score'),
-              const SizedBox(width: PianoSpacing.md),
-              _Metric(label: 'Acc', value: '${(accuracy * 100).toStringAsFixed(1)}%'),
+              Expanded(
+                flex: 3,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _Metric(label: 'BPM', value: '$tempo'),
+                      const SizedBox(width: PianoSpacing.md),
+                      _Metric(label: 'Score', value: '$score'),
+                      const SizedBox(width: PianoSpacing.md),
+                      _Metric(
+                          label: 'Acc',
+                          value: '${(accuracy * 100).toStringAsFixed(1)}%'),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

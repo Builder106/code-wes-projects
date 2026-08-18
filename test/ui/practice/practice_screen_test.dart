@@ -1,17 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:piano_tool/models/engine_models.dart';
+import 'package:piano_tool/ui/keyboard/keyboard_geometry.dart';
+import 'package:piano_tool/ui/keyboard/piano_keyboard_view.dart';
+import 'package:piano_tool/ui/practice/practice_hud.dart';
 import 'package:piano_tool/ui/practice/practice_screen.dart';
 import 'package:piano_tool/ui/practice/stage_controller.dart';
-import 'package:piano_tool/ui/keyboard/piano_keyboard_view.dart';
+import 'package:piano_tool/ui/practice/transport_column.dart';
 import 'package:piano_tool/ui/staff/staff_view.dart';
 import 'package:piano_tool/ui/theme/app_theme.dart';
 
-Widget _harness() => ProviderScope(
+Widget _screen({double textScale = 1.0}) => MaterialApp(
+      theme: PianoTheme.light(),
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
+          child: const PracticeScreen(stageId: 'stage_1'),
+        ),
+      ),
+    );
+
+Widget _harness({double textScale = 1.0}) => ProviderScope(
       overrides: [audioGrantedProvider.overrideWith((ref) async => true)],
-      child: MaterialApp(
-        theme: PianoTheme.light(),
-        home: const PracticeScreen(stageId: 'stage_1'),
+      child: _screen(textScale: textScale),
+    );
+
+/// The screen's own stage has short metrics, so the two header tests drive the
+/// HUD directly with the widest values it can ever hold: a fast tempo, a six
+/// figure score, and full accuracy.
+Widget _hud({required double textScale, required double width}) => MaterialApp(
+      theme: PianoTheme.light(),
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: width,
+              child: const PracticeHud(
+                title: 'C Major Scale',
+                tempo: 200,
+                score: 999999,
+                accuracy: 1.0,
+                progress: 0.5,
+              ),
+            ),
+          ),
+        ),
       ),
     );
 
@@ -19,6 +58,8 @@ Widget _harness() => ProviderScope(
 const _sizes = [Size(640, 360), Size(740, 360), Size(915, 412)];
 
 void main() {
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+
   for (final size in _sizes) {
     testWidgets('renders without overflow at ${size.width}x${size.height}',
         (tester) async {
@@ -33,6 +74,56 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  for (final scale in [2.0, 3.0]) {
+  testWidgets('renders without overflow at a text scale of $scale', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(640, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    // An accessibility text scale doubles the width of every metric. The
+    // header must absorb that rather than throw.
+    await tester.pumpWidget(_harness(textScale: scale));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('BPM'), findsOneWidget);
+    expect(find.textContaining('Score'), findsOneWidget);
+    expect(find.textContaining('Acc'), findsOneWidget);
+  });
+  }
+
+  testWidgets('the header absorbs a large text scale instead of overflowing',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(640, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    // 580 is the header's usable width on the narrowest phone once the
+    // transport column is taken out.
+    await tester.pumpWidget(_hud(textScale: 3.0, width: 580));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.textContaining('BPM'), findsOneWidget);
+    expect(find.textContaining('Score'), findsOneWidget);
+    expect(find.textContaining('Acc'), findsOneWidget);
+  });
+
+  testWidgets('the header grows for tall text rather than clipping it',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(640, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_hud(textScale: 1.0, width: 580));
+    await tester.pump();
+    expect(tester.getSize(find.byType(PracticeHud)).height,
+        greaterThanOrEqualTo(PracticeHud.minHeight));
+
+    await tester.pumpWidget(_hud(textScale: 3.0, width: 580));
+    await tester.pump();
+    // Pinned at 44 the tripled text would paint outside its own header.
+    expect(tester.getSize(find.byType(PracticeHud)).height,
+        greaterThan(PracticeHud.minHeight + 20));
+  });
 
   testWidgets('shows the staff, the keyboard, and the transport', (tester) async {
     await tester.binding.setSurfaceSize(const Size(740, 360));
@@ -61,16 +152,76 @@ void main() {
     expect(find.textContaining('Acc'), findsOneWidget);
   });
 
-  testWidgets('all 61 keys fit without a scroll view', (tester) async {
+  testWidgets('all 61 keys fit across the pane at a legible width',
+      (tester) async {
     await tester.binding.setSurfaceSize(const Size(640, 360));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(_harness());
     await tester.pump();
 
+    final size = tester.getSize(find.byType(PianoKeyboardView));
+    expect(size.width, 640 - TransportColumn.width);
+
+    // The keys are laid out from the pane width, so assert the real geometry:
+    // the last white key ends exactly at the right edge, and no key is so thin
+    // that "fits" would mean "unreadable".
+    final geometry = KeyboardGeometry(width: size.width, height: size.height);
+    expect(geometry.whiteKeyWidth, greaterThan(12));
     expect(
-      find.descendant(of: find.byType(PianoKeyboardView), matching: find.byType(Scrollable)),
-      findsNothing,
+      geometry.whiteKeyRect(KeyboardGeometry.whiteKeyCount - 1).right,
+      moreOrLessEquals(size.width),
     );
+  });
+
+  testWidgets('the speed control cycles through every step and wraps',
+      (tester) async {
+    await tester.binding.setSurfaceSize(const Size(740, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(_harness());
+    await tester.pump();
+
+    expect(find.text('1.0x'), findsOneWidget);
+
+    // The label is small; the target is not.
+    final target = tester.getSize(find.ancestor(
+      of: find.text('1.0x'),
+      matching: find.byType(Container),
+    ).first);
+    expect(target.width, greaterThanOrEqualTo(48));
+    expect(target.height, greaterThanOrEqualTo(48));
+
+    var current = '1.0x';
+    for (final expected in ['1.5x', '2.0x', '0.5x', '0.75x', '1.0x']) {
+      await tester.tap(find.text(current));
+      await tester.pump();
+      expect(find.text(expected), findsOneWidget);
+      current = expected;
+    }
+  });
+
+  testWidgets('leaving the screen stops the engine', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(740, 360));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final container = ProviderContainer(
+      overrides: [audioGrantedProvider.overrideWith((ref) async => true)],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(container: container, child: _screen()),
+    );
+    await tester.tap(find.byIcon(Icons.play_arrow));
+    await tester.pump();
+    expect(container.read(engineStatusProvider('stage_1')),
+        StageEngineStatus.playing);
+
+    // Navigating away must not leave a periodic timer marking notes missed.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+    expect(container.read(engineStatusProvider('stage_1')),
+        StageEngineStatus.stopped);
   });
 }

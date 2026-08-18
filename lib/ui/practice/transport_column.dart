@@ -28,6 +28,15 @@ class TransportColumn extends StatelessWidget {
   final VoidCallback onReplay;
   final ValueChanged<double> onSpeedChanged;
 
+  /// "0.75x" and "1.0x", not "0.8x". Trailing zeros go, the tenth stays.
+  String get _label {
+    final digits = speed
+        .toStringAsFixed(2)
+        .replaceFirst(RegExp(r'0$'), '')
+        .replaceFirst(RegExp(r'\.$'), '');
+    return '${digits}x';
+  }
+
   double get _nextSpeed {
     // Nearest step, so a speed set elsewhere still advances sensibly.
     var nearest = 0;
@@ -79,12 +88,15 @@ class TransportColumn extends StatelessWidget {
             message: 'Playback speed',
             child: InkWell(
               onTap: () => onSpeedChanged(_nextSpeed),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: PianoSpacing.xs,
-                  vertical: PianoSpacing.xs2,
+              // A real touch target. The label is small, the thing you hit
+              // is not.
+              child: Container(
+                constraints: const BoxConstraints(
+                  minWidth: kMinInteractiveDimension,
+                  minHeight: kMinInteractiveDimension,
                 ),
-                child: Text('${speed.toStringAsFixed(1)}x',
+                alignment: Alignment.center,
+                child: Text(_label,
                     style: Theme.of(context).textTheme.labelSmall),
               ),
             ),
