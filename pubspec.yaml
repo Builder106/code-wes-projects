@@ -28,10 +28,6 @@ dependencies:
   synchronized: ^3.1.0
   permission_handler: ^11.1.0
 
-  # UI
-  # TODO(task-4): remove once lib/main.dart no longer imports google_fonts.
-  google_fonts: ^6.1.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

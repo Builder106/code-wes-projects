@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'ui/theme/app_theme.dart';
 import 'ui/game/game_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // The whole app is landscape. Locking a single screen would rotate the
+  // user in and out as they navigate.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
   runApp(const ProviderScope(child: PianoToolApp()));
 }
 
@@ -16,24 +23,8 @@ class PianoToolApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Piano Tool',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2196F3),
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.interTextTheme(),
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2196F3),
-          brightness: Brightness.dark,
-        ),
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-        scaffoldBackgroundColor: const Color(0xFF121212),
-      ),
+      theme: PianoTheme.light(),
+      darkTheme: PianoTheme.dark(),
       themeMode: ThemeMode.system,
       home: const GameScreen(),
     );
