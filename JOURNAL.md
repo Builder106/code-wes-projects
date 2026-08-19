@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-19 — WesNest Semantic Search Monorepo Integration #architecture #milestone
+
+Built WesNest Semantic Search under `apps/wesnest-semantic-search/` — a Gemini-embeddings-backed free-text search over Wesleyan's WesNest club directory, since WesNest's own search only matches exact words in a club name. Following the Piano Tool precedent, it lives in this monorepo rather than a new repo under the Code-Wes GitHub org, since I'm not yet a member of that org. Deployed on Vercel (sankofa-forge/wesnest-semantic-search, git-linked to this repo's `wesnest-semantic-search` branch); current preview build is live at https://wesnest-semantic-search-on3lmj048-sankofa-forge.vercel.app, with the production alias resolving once the branch merges to `main`.
+
 ## 2026-08-18 — Piano Tool Monorepo Integration #architecture #milestone
 
 Folded the Piano Tool interactive tutor into the repository under `apps/piano-tool/` via `git subtree`. Framed the application as a Code-Wes audio systems initiative and campus practice room aid, giving Wesleyan musicians an accessible ear-and-sight coach while demonstrating real-time YIN pitch detection and SMuFL staff rendering in Flutter.

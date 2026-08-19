@@ -25,6 +25,13 @@ An on-device interactive piano coach and sheet music visualizer built for studen
 - **Custom Staff Engine:** Vector-accurate sheet music scrolling and scoring designed with SMuFL notation standards and accessible contrast geometry.
 - **Goal:** Provide an open-source, offline ear-and-sight tutor for Wesleyan student musicians and a reference project for real-time audio systems in Flutter.
 
+### 3. [WesNest Semantic Search](apps/wesnest-semantic-search/)
+
+A free-text, meaning-based search tool over Wesleyan University's WesNest club directory, built because WesNest's own search only matches exact words in a club's name.
+
+- **Semantic Ranking:** Embeds each club's name, categories, and summary with the Gemini API and ranks results by similarity to a natural-language query, with a keyword-match fallback if the embedding call fails.
+- **Goal:** Help Wesleyan students find clubs by what they're looking for, not just what a club happens to be named, and serve as a reference project for Gemini embeddings in a serverless deployment.
+
 ---
 
 ## License
