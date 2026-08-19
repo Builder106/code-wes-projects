@@ -1,0 +1,15 @@
+{
+  "name": "wesnest-semantic-search",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test --test-name-pattern='^(?!.*Playwright)' tests/",
+    "test:e2e": "playwright test tests/scrapeClubs.spec.mjs tests/frontend.spec.mjs",
+    "build-embeddings": "node scripts/build-embeddings.mjs",
+    "scrape-clubs": "node scripts/scrape-clubs.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}
