@@ -25,7 +25,7 @@ test('sends the API key and text in the request', async () => {
     return { ok: true, status: 200, json: async () => ({ embedding: { values: [1] } }) };
   };
   await embedText('board games', 'my-key', fetchImpl);
-  assert.ok(captured.url.includes('text-embedding-004:embedContent'));
+  assert.ok(captured.url.includes('gemini-embedding-001:embedContent'));
   assert.ok(captured.url.includes('key=my-key'));
   const body = JSON.parse(captured.options.body);
   assert.equal(body.content.parts[0].text, 'board games');

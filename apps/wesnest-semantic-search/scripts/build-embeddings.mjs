@@ -2,13 +2,40 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { parseClubsMarkdown } from '../lib/parseClubsMarkdown.mjs';
 import { embedText } from '../lib/geminiEmbed.mjs';
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function embedWithRetry(text, apiKey, embedImpl, maxAttempts = 6) {
+  let attempt = 0;
+  let lastError;
+  while (attempt < maxAttempts) {
+    try {
+      return await embedImpl(text, apiKey);
+    } catch (error) {
+      lastError = error;
+      const isRateLimited = /\b(429|5\d\d)\b/.test(error.message ?? '');
+      if (!isRateLimited) {
+        throw error;
+      }
+      attempt += 1;
+      const backoffMs = Math.min(30000, 1000 * 2 ** attempt);
+      await sleep(backoffMs);
+    }
+  }
+  throw lastError;
+}
+
 export async function buildEmbeddings(markdown, apiKey, embedImpl = embedText) {
   const orgs = parseClubsMarkdown(markdown);
   const results = [];
   for (const org of orgs) {
     const text = `${org.name}. ${org.categories}. ${org.summary}`;
-    const embedding = await embedImpl(text, apiKey);
+    const embedding = await embedWithRetry(text, apiKey, embedImpl);
     results.push({ ...org, embedding });
+    if (embedImpl === embedText) {
+      await sleep(300);
+    }
   }
   return results;
 }

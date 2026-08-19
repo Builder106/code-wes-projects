@@ -1,4 +1,4 @@
-const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent';
+const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent';
 
 export async function embedText(text, apiKey, fetchImpl = fetch) {
   const response = await fetchImpl(`${ENDPOINT}?key=${apiKey}`, {
