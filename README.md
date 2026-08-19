@@ -17,6 +17,14 @@ Turn a running copy of the video game *Portal 2* into an interactive, crowd-cont
 - Architecture and Milestones: [TODO-Portal2.md](./TODO-Portal2.md)
 - Original Project Pitch: [proposal-email/](./proposal-email/)
 
+### 2. [Piano Tool — Interactive Practice Tutor](apps/piano-tool/)
+
+An on-device interactive piano coach and sheet music visualizer built for student musicians in campus practice rooms.
+
+- **Real-Time DSP:** Listens to acoustic or digital pianos via device microphone using a low-latency YIN pitch detection engine.
+- **Custom Staff Engine:** Vector-accurate sheet music scrolling and scoring designed with SMuFL notation standards and accessible contrast geometry.
+- **Goal:** Provide an open-source, offline ear-and-sight tutor for Wesleyan student musicians and a reference project for real-time audio systems in Flutter.
+
 ---
 
 ## License

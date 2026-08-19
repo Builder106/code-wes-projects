@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-18 — Piano Tool Monorepo Integration #architecture #milestone
+
+Folded the Piano Tool interactive tutor into the repository under `apps/piano-tool/` via `git subtree`. Framed the application as a Code-Wes audio systems initiative and campus practice room aid, giving Wesleyan musicians an accessible ear-and-sight coach while demonstrating real-time YIN pitch detection and SMuFL staff rendering in Flutter.
+
 ## 2026-07-17 — Portfolio Hub Pivot #pivot #milestone
 
 Realized that keeping actual application code on my personal profile wasn't scalable since I have two years left at Wesleyan and will be transferring all code to the Code-Wes GitHub organization anyway. Pivoted this repository to be a permanent "Hub" on my profile — a place for pitches, architecture docs, and this journal.
