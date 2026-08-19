@@ -6,12 +6,12 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function embedWithRetry(text, apiKey, embedImpl, maxAttempts = 6) {
+async function embedWithRetry(text, apiKey, embedImpl, taskType, maxAttempts = 6) {
   let attempt = 0;
   let lastError;
   while (attempt < maxAttempts) {
     try {
-      return await embedImpl(text, apiKey);
+      return await embedImpl(text, apiKey, undefined, taskType);
     } catch (error) {
       lastError = error;
       const isRateLimited = /\b(429|5\d\d)\b/.test(error.message ?? '');
@@ -31,7 +31,7 @@ export async function buildEmbeddings(markdown, apiKey, embedImpl = embedText) {
   const results = [];
   for (const org of orgs) {
     const text = `${org.name}. ${org.categories}. ${org.summary}`;
-    const embedding = await embedWithRetry(text, apiKey, embedImpl);
+    const embedding = await embedWithRetry(text, apiKey, embedImpl, 'RETRIEVAL_DOCUMENT');
     results.push({ ...org, embedding });
     if (embedImpl === embedText) {
       await sleep(300);

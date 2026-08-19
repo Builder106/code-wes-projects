@@ -35,3 +35,25 @@ test('throws on a non-2xx response', async () => {
   const fetchImpl = fakeFetch({ error: 'rate limited' }, false);
   await assert.rejects(() => embedText('x', 'key', fetchImpl), /Gemini embedding request failed/);
 });
+
+test('omits taskType from the request body when not provided', async () => {
+  let captured;
+  const fetchImpl = async (url, options) => {
+    captured = options;
+    return { ok: true, status: 200, json: async () => ({ embedding: { values: [1] } }) };
+  };
+  await embedText('board games', 'my-key', fetchImpl);
+  const body = JSON.parse(captured.body);
+  assert.equal('taskType' in body, false);
+});
+
+test('includes taskType in the request body when provided', async () => {
+  let captured;
+  const fetchImpl = async (url, options) => {
+    captured = options;
+    return { ok: true, status: 200, json: async () => ({ embedding: { values: [1] } }) };
+  };
+  await embedText('board games', 'my-key', fetchImpl, 'RETRIEVAL_DOCUMENT');
+  const body = JSON.parse(captured.body);
+  assert.equal(body.taskType, 'RETRIEVAL_DOCUMENT');
+});

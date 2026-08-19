@@ -15,7 +15,7 @@ export async function rankOrgs(query, orgs, apiKey, opts = {}) {
 
   let scored;
   try {
-    const queryEmbedding = await embedImpl(query, apiKey);
+    const queryEmbedding = await embedImpl(query, apiKey, undefined, 'RETRIEVAL_QUERY');
     scored = orgs.map((org) => ({
       ...org,
       score: cosineSimilarity(queryEmbedding, org.embedding),
