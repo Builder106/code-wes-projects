@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-name-pattern='^(?!.*Playwright)' tests/",
+    "test": "node --test --test-name-pattern='^(?!.*Playwright)' 'tests/**/*.test.mjs'",
     "test:e2e": "playwright test tests/scrapeClubs.spec.mjs tests/frontend.spec.mjs",
     "build-embeddings": "node scripts/build-embeddings.mjs",
     "scrape-clubs": "node scripts/scrape-clubs.mjs"
