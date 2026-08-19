@@ -1,7 +1,12 @@
 // api/search.js
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { cosineSimilarity } from '../lib/similarity.mjs';
 import { embedText } from '../lib/geminiEmbed.mjs';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ORGS_PATH = path.join(__dirname, '..', 'data', 'orgs-embeddings.json');
 
 function keywordScore(query, org) {
   const q = query.toLowerCase();
@@ -33,7 +38,7 @@ export async function rankOrgs(query, orgs, apiKey, opts = {}) {
 let cachedOrgs;
 function loadOrgs() {
   if (!cachedOrgs) {
-    cachedOrgs = JSON.parse(readFileSync('data/orgs-embeddings.json', 'utf8'));
+    cachedOrgs = JSON.parse(readFileSync(ORGS_PATH, 'utf8'));
   }
   return cachedOrgs;
 }
