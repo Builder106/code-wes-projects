@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/search.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "ignoreBuildStep": "case \"$VERCEL_GIT_COMMIT_REF\" in main|staging|wesnest-search) exit 0 ;; *) echo \"Branch '$VERCEL_GIT_COMMIT_REF' not in allowlist; skipping build\" && exit 1 ;; esac"
+}
