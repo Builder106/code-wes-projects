@@ -16,3 +16,4 @@ npm-debug.log*
 # Media
 *.webm
 .superpowers/
+.vercel
