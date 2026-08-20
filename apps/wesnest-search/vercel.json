@@ -1,4 +1,5 @@
 {
+  "buildCommand": "echo 'no build needed'",
   "functions": {
     "api/search.js": {
       "runtime": "nodejs20.x"
