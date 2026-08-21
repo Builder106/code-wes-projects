@@ -55,7 +55,7 @@ jobs:
       - name: Black format check
         run: python -m black --check backend
       - name: Mypy type check
-        run: python -m mypy backend/app --strict --ignore-missing-imports
+        run: python -m mypy --config-file backend/pyproject.toml backend/app --strict --ignore-missing-imports
       - name: Run pytest
         run: python -m pytest backend
 
