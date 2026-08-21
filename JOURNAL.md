@@ -2,9 +2,13 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
-## 2026-08-19 — WesNest Semantic Search Monorepo Integration #architecture #milestone
+## 2026-08-21 — Canonical monorepo and local Piano Tool deprecation #decision #pivot
 
-Built WesNest Semantic Search under `apps/wesnest-semantic-search/` — a Gemini-embeddings-backed free-text search over Wesleyan's WesNest club directory, since WesNest's own search only matches exact words in a club name. Following the Piano Tool precedent, it lives in this monorepo rather than a new repo under the Code-Wes GitHub org, since I'm not yet a member of that org. Deployed on Vercel (sankofa-forge/wesnest-semantic-search, git-linked to this repo's `wesnest-semantic-search` branch); current preview build is live at https://wesnest-semantic-search-on3lmj048-sankofa-forge.vercel.app, with the production alias resolving once the branch merges to `main`.
+Confirmed `code-wes-projects` as the canonical repository for the projects in this hub. The standalone local Piano Tool checkout is deprecated and will remain only until its useful differences have been reconciled with `apps/piano-tool/`; it will not become a separate GitHub repository.
+
+## 2026-08-19 — WesNest Search Monorepo Integration #architecture #milestone
+
+Built WesNest Search under `apps/wesnest-search/` — a Gemini-embeddings-backed free-text search over Wesleyan's WesNest club directory, since WesNest's own search only matches exact words in a club name. It lives in this monorepo rather than a separate repository. Its Vercel deployment uses the app directory as its root and follows the monorepo's canonical path.
 
 ## 2026-08-18 — Piano Tool Monorepo Integration #architecture #milestone
 

@@ -1,0 +1,6 @@
+packages:
+  - apps/wesnest-search
+  - proposal-email
+
+onlyBuiltDependencies:
+  - esbuild

@@ -2,6 +2,14 @@
 
 Wesleyan student computing club project directory and showcase roadmap.
 
+## Repository direction
+
+`code-wes-projects` is the canonical repository for these projects. New work
+belongs under the appropriate directory here rather than in a standalone
+repository. The standalone local Piano Tool checkout is deprecated and is
+being kept temporarily while its remaining useful changes are reconciled with
+`apps/piano-tool/`; it is not a second source of truth.
+
 ## v1.1 — Organization & Portal Migration
 
 - **Portal 2.0 Redesign**: Modern responsive project portal per [`docs/specs/portal2-migration.md`](docs/specs/portal2-migration.md).

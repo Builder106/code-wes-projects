@@ -4,6 +4,7 @@
 # Node
 node_modules/
 npm-debug.log*
+dist/
 
 # Secrets
 .env
@@ -16,4 +17,16 @@ npm-debug.log*
 # Media
 *.webm
 .superpowers/
-.vercel
+
+# Generated build and test output
+.dart_tool/
+build/
+coverage/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+test-results/
+playwright-report/
+
+# Deployment metadata
+.vercel/

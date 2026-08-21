@@ -6,7 +6,9 @@
 
 Code-Wes is the student-run Computer Science organization at Wesleyan University where student developers collaborate on ambitious software and systems engineering projects.
 
-This repository serves as an open workspace for planning new club initiatives, recording architectural design documents, and building early prototypes before they launch across the university community.
+This repository is the canonical home for the club's project plans, application prototypes, and related engineering notes. It keeps projects together while they are being developed and makes their history easy to follow.
+
+The standalone local Piano Tool checkout is deprecated. It is retained temporarily for reconciliation and will not be published as a separate repository.
 
 ## Featured Initiatives
 
@@ -25,7 +27,7 @@ An on-device interactive piano coach and sheet music visualizer built for studen
 - **Custom Staff Engine:** Vector-accurate sheet music scrolling and scoring designed with SMuFL notation standards and accessible contrast geometry.
 - **Goal:** Provide an open-source, offline ear-and-sight tutor for Wesleyan student musicians and a reference project for real-time audio systems in Flutter.
 
-### 3. [WesNest Semantic Search](apps/wesnest-semantic-search/)
+### 3. [WesNest Search](apps/wesnest-search/)
 
 A free-text, meaning-based search tool over Wesleyan University's WesNest club directory, built because WesNest's own search only matches exact words in a club's name.
 

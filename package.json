@@ -1,0 +1,9 @@
+{
+  "name": "code-wes-projects",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "test:wesnest": "pnpm --filter wesnest-search test",
+    "typecheck:proposal-email": "pnpm --filter proposal-email typecheck"
+  }
+}
