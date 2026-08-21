@@ -1,15 +1,22 @@
-name: CI
+name: Piano Tool CI
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/piano-tool/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'apps/piano-tool/**'
 
 jobs:
   flutter:
     name: Flutter (analyze, format, test)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/piano-tool
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -29,6 +36,9 @@ jobs:
   python:
     name: Python (ruff, black, mypy, pytest)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/piano-tool
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
