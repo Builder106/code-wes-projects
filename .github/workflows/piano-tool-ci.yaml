@@ -10,6 +10,13 @@ on:
     paths:
       - 'apps/piano-tool/**'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: piano-tool-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   flutter:
     name: Flutter (analyze, format, test)
@@ -18,7 +25,7 @@ jobs:
       run:
         working-directory: apps/piano-tool
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.0'
@@ -40,8 +47,8 @@ jobs:
       run:
         working-directory: apps/piano-tool
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Install dependencies

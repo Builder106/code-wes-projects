@@ -39,6 +39,11 @@ jobs:
         cache-dependency-path: pnpm-lock.yaml
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
+    - name: Syntax and lint check
+      run: |
+        node --check apps/wesnest-search/lib/*.mjs
+        node --check apps/wesnest-search/scripts/*.mjs
+        node --check apps/wesnest-search/api/search.js
     - name: Run unit tests
       run: pnpm --filter wesnest-search test
 
