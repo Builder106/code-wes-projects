@@ -6,10 +6,5 @@
       "wesnest-search": true
     }
   },
-  "buildCommand": "echo 'no build needed'",
-  "functions": {
-    "api/search.js": {
-      "runtime": "nodejs20.x"
-    }
-  }
+  "buildCommand": "echo 'no build needed'"
 }
