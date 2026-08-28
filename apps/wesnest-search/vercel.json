@@ -6,5 +6,6 @@
       "wesnest-search": true
     }
   },
-  "buildCommand": "echo 'no build needed'"
+  "buildCommand": "echo 'no build needed'",
+  "outputDirectory": "."
 }
