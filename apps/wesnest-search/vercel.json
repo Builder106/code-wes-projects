@@ -3,7 +3,8 @@
   "git": {
     "deploymentEnabled": {
       "**": false,
-      "wesnest-search": true
+      "wesnest-search": true,
+      "staging": true
     }
   },
   "buildCommand": "echo 'no build needed'"

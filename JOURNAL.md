@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-29: Allow staging previews in app projects #decision
+
+Piano Tool and WesNest Search now accept Git-triggered deployments from `staging` for Preview, while keeping `piano-tool` and `wesnest-search` as their Production Branches. All other branches, including Dependabot branches, remain disabled.
+
 ## 2026-08-28: Per-project Vercel branch gates #decision #architecture
 
 Set each Vercel project to deploy only from its matching branch: `piano-tool` for Piano Tool and `wesnest-search` for WesNest Search. The repository disables automatic Git deployments from all other branches, including `main`, `staging`, feature branches, and Dependabot branches. The old WesNest `ignoreCommand` was removed because it created canceled deployment records. `scripts/deploy-vercel.mjs` allows manual production deployment only from the matching branch.
