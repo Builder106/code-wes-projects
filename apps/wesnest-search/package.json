@@ -10,7 +10,7 @@
     "scrape-clubs": "node scripts/scrape-clubs.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "^1.62.1",
     "serve": "^14.2.6"
   }
 }

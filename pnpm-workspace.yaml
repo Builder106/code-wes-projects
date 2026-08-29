@@ -2,5 +2,8 @@ packages:
   - apps/wesnest-search
   - proposal-email
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - resend@6.25.0
