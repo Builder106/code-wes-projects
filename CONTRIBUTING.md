@@ -34,7 +34,15 @@ environments.
 For local configuration, provide `DATABASE_URL`, `SESSION_SECRET` (at least 32
 bytes), `ALLOWED_GITHUB_USER_ID`, GitHub App credentials, `WORKER_INGEST_SECRET`,
 and `GEMINI_API_KEY`. Apply migrations from
-`apps/comment-lens/db/migrations/` with the repository's Drizzle tooling. The
+`apps/comment-lens/db/migrations/` with the repository's Drizzle tooling. From
+the repository root, the safe migration command is:
+
+```bash
+pnpm --filter comment-lens db:migrate
+```
+
+This applies the committed migrations using `DATABASE_URL`; it does not
+generate or push schema changes. The
 worker requires `COMMENT_LENS_GITHUB_APP_ID`,
 `COMMENT_LENS_GITHUB_APP_PRIVATE_KEY`, `COMMENT_LENS_INGESTION_SIGNING_SECRET`,
 and `COMMENT_LENS_UPLOAD_BASE_URL` in GitHub Actions. Never put repository source
