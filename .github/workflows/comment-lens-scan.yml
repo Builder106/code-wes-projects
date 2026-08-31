@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Validate dispatch inputs
+        id: validate
         env:
           TARGET_REPOSITORY: ${{ inputs.repository }}
           TARGET_REF: ${{ inputs.ref }}
@@ -46,6 +47,9 @@ jobs:
               raise SystemExit("TARGET_REPOSITORY must be owner/name")
           if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", os.environ["SCAN_ID"]):
               raise SystemExit("SCAN_ID contains unsupported characters")
+          owner, repository = os.environ["TARGET_REPOSITORY"].split("/", 1)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"owner={owner}\nrepository={repository}\n")
           PY
 
       - name: Check out trusted scanner
@@ -60,8 +64,8 @@ jobs:
         with:
           app-id: ${{ secrets.COMMENT_LENS_GITHUB_APP_ID }}
           private-key: ${{ secrets.COMMENT_LENS_GITHUB_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ inputs.repository }}
+          owner: ${{ steps.validate.outputs.owner }}
+          repositories: ${{ steps.validate.outputs.repository }}
           permission-contents: read
 
       - name: Check out target source
