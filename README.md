@@ -34,6 +34,12 @@ A free-text, meaning-based search tool over Wesleyan University's WesNest club d
 - **Semantic Ranking:** Embeds each club's name, categories, and summary with the Gemini API and ranks results by similarity to a natural-language query, with a keyword-match fallback if the embedding call fails.
 - **Goal:** Help Wesleyan students find clubs by what they're looking for, not just what a club happens to be named, and serve as a reference project for Gemini embeddings in a serverless deployment.
 
+### 4. [Comment Lens](apps/comment-lens/)
+
+A private review dashboard that inventories repository comments and ranks potentially verbose or boilerplate wording for human review. It stores decisions without modifying source files; hosted scanning and Gemini assessment require separately configured services.
+
+Comment Lens requires a managed Postgres `DATABASE_URL`, `SESSION_SECRET`, `ALLOWED_GITHUB_USER_ID`, GitHub App credentials (`GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`, and `GITHUB_APP_PRIVATE_KEY`), `WORKER_INGEST_SECRET`, and `GEMINI_API_KEY`. `GEMINI_MODEL` is optional and defaults to `gemini-3.5-flash-lite`. Run the committed Drizzle migrations before first use. The GitHub App must be installed only on the selected repositories and the central worker repository; configure the matching worker upload URL and signing secret as Actions variables and secrets. Do not commit credentials or scan artifacts.
+
 ---
 
 ## License

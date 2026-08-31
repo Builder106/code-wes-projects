@@ -12,6 +12,38 @@ top-level category when it is not an application). Keep project-specific
 instructions beside the project and update the root documentation when its
 name or location changes.
 
+## Branches and deployments
+
+Use short-lived `feature/*` branches for changes. Merge tested work into
+`staging` for shared preview and acceptance testing, then promote it into the
+matching production branch for the application being released.
+
+Comment Lens uses `comment-lens` as its Vercel Production Branch. Its Vercel
+project accepts automatic Git deployments only from `comment-lens` and
+`staging`; `main`, feature branches, and Dependabot branches remain outside
+that deployment path. The production deploy wrapper also refuses to deploy
+Comment Lens from a different branch. Keep staging credentials and data
+separate from production. See the personal
+`CS/projects/personal/monorepo-playbook.md` for the reusable branch model.
+
+## Comment Lens
+
+Comment Lens uses pnpm for its Next.js control plane and Python 3.12 for its
+non-executing scanner. Do not provision hosted services or commit local scan
+data; configure GitHub, database, and model credentials only in deployment
+environments.
+
+For local configuration, provide `DATABASE_URL`, `SESSION_SECRET` (at least 32
+bytes), `ALLOWED_GITHUB_USER_ID`, GitHub App credentials, `WORKER_INGEST_SECRET`,
+and `GEMINI_API_KEY`. Apply migrations from
+`apps/comment-lens/db/migrations/` with the repository's Drizzle tooling. The
+worker requires `COMMENT_LENS_GITHUB_APP_ID`,
+`COMMENT_LENS_GITHUB_APP_PRIVATE_KEY`, `COMMENT_LENS_INGESTION_SIGNING_SECRET`,
+and `COMMENT_LENS_UPLOAD_BASE_URL` in GitHub Actions. Never put repository source
+or credentials in logs, URLs, or test snapshots. Run dependency installation,
+builds, browser tests, and scanner verification on the designated Linux ARM64
+verification environment.
+
 ## Proposal Email Setup
 
 If you need to test or build the `proposal-email/` (React Email template):

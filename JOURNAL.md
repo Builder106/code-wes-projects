@@ -2,6 +2,14 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-30: Comment Lens monorepo integration #architecture #milestone
+
+Added Comment Lens as a private Next.js dashboard with a Python comment scanner, dedicated CI coverage, and a `comment-lens` Vercel production branch. Service provisioning, credentials, and deployment remain separate operational setup.
+
+## 2026-08-30: Comment Lens production boundaries #decision #security
+
+Kept Tree-sitter as the primary parser with Pygments fallback, retained only comments and short source context, and separated deterministic review-priority scoring from optional on-demand Gemini assessment. GitHub App installation tokens, signed worker chunks, owner-scoped persistence, and explicit `comment-lens` plus `staging` deployment rules form the production boundary; no repository files are modified by dashboard review actions.
+
 ## 2026-08-29: Allow staging previews in app projects #decision
 
 Piano Tool and WesNest Search now accept Git-triggered deployments from `staging` for Preview, while keeping `piano-tool` and `wesnest-search` as their Production Branches. All other branches, including Dependabot branches, remain disabled.

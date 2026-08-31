@@ -9,9 +9,13 @@ const projects = {
     directory: "apps/wesnest-search",
     branch: "wesnest-search",
   },
+  "comment-lens": {
+    directory: "apps/comment-lens",
+    branch: "comment-lens",
+  },
 };
 
-const usage = "Usage: pnpm deploy:vercel <piano-tool|wesnest-search> [vercel options]";
+const usage = "Usage: pnpm deploy:vercel <piano-tool|wesnest-search|comment-lens> [vercel options]";
 const [projectName, ...vercelArgs] = process.argv.slice(2);
 
 if (projectName === "--help" || projectName === "-h") {

@@ -4,6 +4,9 @@
   "packageManager": "pnpm@11.24.0",
   "scripts": {
     "deploy:vercel": "node scripts/deploy-vercel.mjs",
+    "build:comment-lens": "pnpm --filter comment-lens build",
+    "typecheck:comment-lens": "pnpm --filter comment-lens typecheck",
+    "test:comment-lens": "pnpm --filter comment-lens test",
     "test:wesnest": "pnpm --filter wesnest-search test",
     "typecheck:proposal-email": "pnpm --filter proposal-email typecheck"
   }

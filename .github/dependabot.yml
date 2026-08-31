@@ -5,6 +5,10 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "pip"
+    directory: "/apps/comment-lens/scanner"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
     directory: "/apps/piano-tool/backend"
     schedule:
       interval: "weekly"
