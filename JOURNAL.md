@@ -12,9 +12,9 @@ Added Comment Lens as a private Next.js dashboard with a Python comment scanner,
 
 ## 2026-08-30: Comment Lens production boundaries #decision #security
 
-Kept Tree-sitter as the primary parser with Pygments fallback, retained only comments and short source context, and separated deterministic review-priority scoring from optional on-demand Gemini assessment. GitHub App installation tokens, signed worker chunks, owner-scoped persistence, and explicit `comment-lens` plus `staging` deployment rules form the production boundary; no repository files are modified by dashboard review actions.
+Kept Tree-sitter as the primary parser with Pygments fallback, retained only comments and short source context, and separated deterministic review-priority scoring from optional on-demand Gemini assessment. GitHub App installation tokens, signed worker chunks, owner-scoped persistence, and explicit `comment-lens` plus `staging` deployment rules formed the production boundary at that time; this staging language is superseded by the 2026-08-31 entry above. No repository files are modified by dashboard review actions.
 
-## 2026-08-29: Allow staging previews in app projects #decision
+## 2026-08-29: Allow staging previews in app projects #decision [superseded 2026-08-31]
 
 Piano Tool and WesNest Search now accept Git-triggered deployments from `staging` for Preview, while keeping `piano-tool` and `wesnest-search` as their Production Branches. All other branches, including Dependabot branches, remain disabled.
 
