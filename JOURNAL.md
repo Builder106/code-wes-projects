@@ -6,6 +6,10 @@
 
 Removed the shared `staging` branch and its automatic Vercel deployment rules. The independently deployed applications keep matching production branches, while feature branches use CI and project-specific review before promotion. This avoids unrelated Vercel builds and keeps each project's deployment root and environment boundary explicit.
 
+## 2026-08-31: Comment Lens task-first dashboard #design #accessibility
+
+Replaced the Comment Lens landing-page treatment with a task-first review workspace. The dashboard now shows one clear action for each connection, access, scan, and failure state, then shifts to a queue with a focused comment detail view. The visual system uses cool paper, graphite, slate, and cobalt tokens with responsive layouts and keyboard and accessibility coverage. The redesign changes no backend, scanner, source-retention, or repository-write behavior.
+
 ## 2026-08-30: Comment Lens monorepo integration #architecture #milestone
 
 Added Comment Lens as a private Next.js dashboard with a Python comment scanner, dedicated CI coverage, and a `comment-lens` Vercel production branch. Service provisioning, credentials, and deployment remain separate operational setup.
