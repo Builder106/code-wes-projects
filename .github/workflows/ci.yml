@@ -43,8 +43,8 @@ jobs:
         node --check apps/wesnest-search/lib/*.mjs
         node --check apps/wesnest-search/scripts/*.mjs
         node --check apps/wesnest-search/api/search.js
-    - name: Run unit tests
-      run: pnpm --filter wesnest-search test
+    - name: Run unit tests with 100% coverage gate
+      run: pnpm --filter wesnest-search test:coverage
 
   proposal_email:
     name: Proposal Email
@@ -82,15 +82,15 @@ jobs:
     - name: Install JavaScript dependencies
       run: pnpm install --frozen-lockfile
     - name: Install scanner dependencies
-      run: python -m pip install --disable-pip-version-check -e apps/comment-lens/scanner
+      run: python -m pip install --disable-pip-version-check -e apps/comment-lens/scanner pytest pytest-cov
     - name: Type check
       run: pnpm --filter comment-lens typecheck
     - name: Lint
       run: pnpm --filter comment-lens lint
-    - name: Run JavaScript tests
-      run: pnpm --filter comment-lens test
-    - name: Run scanner tests
-      run: python -m pytest apps/comment-lens/scanner
+    - name: Run JavaScript tests with coverage gate
+      run: pnpm --filter comment-lens test:coverage
+    - name: Run scanner tests with 100% coverage gate
+      run: python -m pytest --cov=comment_lens_scanner --cov-report=term-missing --cov-fail-under=100 apps/comment-lens/scanner
     - name: Validate scanner contract schema
       run: python -m json.tool apps/comment-lens/contracts/schema.json >/dev/null
     - name: Run integration and security tests
