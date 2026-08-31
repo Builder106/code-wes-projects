@@ -14,16 +14,14 @@ name or location changes.
 
 ## Branches and deployments
 
-Use short-lived `feature/*` branches for changes. Merge tested work into
-`staging` for shared preview and acceptance testing, then promote it into the
+Use short-lived `feature/*` branches for changes. Merge tested work into the
 matching production branch for the application being released.
 
-Comment Lens uses `comment-lens` as its Vercel Production Branch. Its Vercel
-project accepts automatic Git deployments only from `comment-lens` and
-`staging`; `main`, feature branches, and Dependabot branches remain outside
-that deployment path. The production deploy wrapper also refuses to deploy
-Comment Lens from a different branch. Keep staging credentials and data
-separate from production. See the personal
+Each application uses its matching branch as its Vercel Production Branch.
+Automatic Git deployments are limited to those production branches; `main`,
+feature branches, and Dependabot branches remain outside that deployment path.
+The production deploy wrapper refuses to deploy an application from a
+different branch. See the personal
 `CS/projects/personal/monorepo-playbook.md` for the reusable branch model.
 
 ## Comment Lens

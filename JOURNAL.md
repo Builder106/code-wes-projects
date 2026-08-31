@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-08-31: Remove shared staging branch #decision #deployment
+
+Removed the shared `staging` branch and its automatic Vercel deployment rules. The independently deployed applications keep matching production branches, while feature branches use CI and project-specific review before promotion. This avoids unrelated Vercel builds and keeps each project's deployment root and environment boundary explicit.
+
 ## 2026-08-30: Comment Lens monorepo integration #architecture #milestone
 
 Added Comment Lens as a private Next.js dashboard with a Python comment scanner, dedicated CI coverage, and a `comment-lens` Vercel production branch. Service provisioning, credentials, and deployment remain separate operational setup.

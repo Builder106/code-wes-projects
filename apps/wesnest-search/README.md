@@ -26,7 +26,7 @@ The app is deployed from this monorepo through Vercel. Its project root is
 `GEMINI_API_KEY` is set as a Sensitive environment variable on Production via
 the Vercel dashboard/CLI. Never commit it.
 
-Only the `wesnest-search` branch deploys this project. `main`, `staging`,
-feature branches, and Dependabot branches are blocked by `vercel.json`. To
+Only the `wesnest-search` branch deploys this project. `main`, feature
+branches, and Dependabot branches are blocked by `vercel.json`. To
 create the production deployment manually, run
 `pnpm deploy:vercel wesnest-search` from that branch.
