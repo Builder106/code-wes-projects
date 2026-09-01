@@ -3,7 +3,8 @@ librosa
 soundfile
 mir-eval
 pretty-midi>=0.2.9
-resampy<0.4.3,>=0.2.2
+resampy<0.4.4,>=0.2.2
+scikit-learn
 scipy>=1.4.1
 typing-extensions
 onnxruntime
@@ -12,6 +13,6 @@ fastapi
 uvicorn[standard]
 pydantic>=2
 python-multipart
-httpx
+httpx2
 pytest
 yt-dlp
