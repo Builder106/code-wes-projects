@@ -54,6 +54,11 @@ test("scan creation has a dispatch failure path", async () => {
   assert.match(route, /failed/i);
 });
 
+test("scan dispatch defaults to the main workflow branch", async () => {
+  const route = await source("app/api/scans/route.ts");
+  assert.match(route, /COMMENT_LENS_WORKFLOW_REF \?\? "main"/);
+});
+
 test("scan dispatch preserves the workflow repository identity contract", async () => {
   const route = await source("app/api/scans/route.ts");
   const workflow = await source("../../.github/workflows/comment-lens-scan.yml");
