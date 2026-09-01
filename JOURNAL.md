@@ -6,6 +6,10 @@
 
 Removed the shared `staging` branch and its automatic Vercel deployment rules. The independently deployed applications keep matching production branches, while feature branches use CI and project-specific review before promotion. This avoids unrelated Vercel builds and keeps each project's deployment root and environment boundary explicit.
 
+## 2026-08-31: Comment Lens database baseline #database #drizzle
+
+The Comment Lens production database was empty when checked. The source tree now uses a Drizzle-generated baseline with migration metadata instead of the incomplete hand-written migration set. The app also records `pg` as a development dependency for Node-based migration commands. The baseline was applied successfully using the raw Neon connection string; Vercel's masked environment export cannot be used to validate that connection locally.
+
 ## 2026-08-31: Comment Lens task-first dashboard #design #accessibility
 
 Replaced the Comment Lens landing-page treatment with a task-first review workspace. The dashboard now shows one clear action for each connection, access, scan, and failure state, then shifts to a queue with a focused comment detail view. The visual system uses cool paper, graphite, slate, and cobalt tokens with responsive layouts and keyboard and accessibility coverage. The redesign changes no backend, scanner, source-retention, or repository-write behavior.
