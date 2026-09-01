@@ -3,15 +3,15 @@ import { execFileSync, spawnSync } from "node:child_process";
 const projects = {
   "piano-tool": {
     directory: "apps/piano-tool",
-    branch: "piano-tool",
+    branch: "main",
   },
   "wesnest-search": {
     directory: "apps/wesnest-search",
-    branch: "wesnest-search",
+    branch: "main",
   },
   "comment-lens": {
     directory: "apps/comment-lens",
-    branch: "comment-lens",
+    branch: "main",
   },
 };
 
