@@ -110,10 +110,13 @@ class StageController extends StateNotifier<StageUiState> {
   /// window, it drops out of [StageUiState.sounding].
   final Map<int, Timer> _soundingTimers = {};
   bool _suppressEngineEvents = false;
+  bool _suppressStateNotifications = false;
   static const Duration _soundingDecay = Duration(milliseconds: 350);
 
   static const double minSpeed = 0.5;
   static const double maxSpeed = 2.0;
+
+  StageEngineStatus get engineStatus => _engine.state.engineState;
 
   Future<void> start() async {
     _suppressEngineEvents = false;
@@ -143,7 +146,13 @@ class StageController extends StateNotifier<StageUiState> {
       // Nothing is being listened for once stopped, so no key should stay lit.
       _clearSounding();
     } else {
-      state = state.copyWith(status: StageEngineStatus.stopped);
+      // The practice screen can be disposed while Riverpod is finalizing a
+      // route. Keep direct reads accurate without notifying listeners that are
+      // being unmounted.
+      _updateSilently(() {
+        _sync();
+        _clearSounding();
+      });
     }
   }
 
@@ -216,6 +225,22 @@ class StageController extends StateNotifier<StageUiState> {
       accuracy: s.accuracy,
       status: s.engineState,
     );
+  }
+
+  void _updateSilently(void Function() update) {
+    final wasSuppressed = _suppressStateNotifications;
+    _suppressStateNotifications = true;
+    try {
+      update();
+    } finally {
+      _suppressStateNotifications = wasSuppressed;
+    }
+  }
+
+  @override
+  bool updateShouldNotify(StageUiState old, StageUiState current) {
+    if (_suppressStateNotifications) return false;
+    return super.updateShouldNotify(old, current);
   }
 
   @override

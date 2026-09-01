@@ -312,7 +312,9 @@ void main() {
     // Navigating away must not leave a periodic timer marking notes missed.
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump();
-    expect(container.read(engineStatusProvider('stage_1')),
-        StageEngineStatus.stopped);
+    expect(
+      container.read(stageControllerProvider('stage_1').notifier).engineStatus,
+      StageEngineStatus.stopped,
+    );
   });
 }
