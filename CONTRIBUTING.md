@@ -14,15 +14,37 @@ name or location changes.
 
 ## Branches and deployments
 
-Use short-lived `feature/*` branches for changes. Merge tested work into the
-matching production branch for the application being released.
+Use short-lived `feature/*` branches for changes. `main` is the canonical
+branch and the production branch. There is no shared `staging` branch. Open a
+pull request, wait for CI, and merge only after review and all required checks
+pass.
 
-Each application uses its matching branch as its Vercel Production Branch.
-Automatic Git deployments are limited to those production branches; `main`,
-feature branches, and Dependabot branches remain outside that deployment path.
-The production deploy wrapper refuses to deploy an application from a
-different branch. See the personal
-`CS/projects/personal/monorepo-playbook.md` for the reusable branch model.
+Each Vercel project has an app-specific Root Directory: `apps/comment-lens/`,
+`apps/piano-tool/`, or `apps/wesnest-search/`. A merge to `main` deploys the
+affected project from its configured root. Feature branches are for review and
+CI; Dependabot branches do not deploy to production. Keep environment
+variables, domains, and other Vercel settings in the dashboard.
+
+## CI gates
+
+The required gates depend on the project. WesNest Search runs syntax and lint
+checks plus unit tests with a 100% coverage threshold. Proposal Email runs
+type checking. Comment Lens runs TypeScript checks, linting, JavaScript and
+scanner coverage gates, integration and security tests, a production build,
+and Playwright end-to-end tests. Piano Tool runs Flutter analysis, formatting,
+and tests, plus Python Ruff, Black, mypy, and pytest with a 100% coverage
+threshold.
+
+Do not merge when a required gate is failing. Run the relevant checks locally
+when possible, then rely on CI as the merge gate and on the merge to `main` as
+the deployment trigger.
+
+## Package ownership
+
+The root pnpm workspace owns `apps/comment-lens`, `apps/wesnest-search`, and
+`proposal-email`, with one root `pnpm-lock.yaml`. Use pnpm from the repository
+root for those projects. Piano Tool is intentionally separate from the pnpm
+workspace because it owns Flutter, Python, Android, and Apple-platform tooling.
 
 ## Comment Lens
 
@@ -52,12 +74,11 @@ verification environment.
 
 ## Proposal Email Setup
 
-If you need to test or build the `proposal-email/` (React Email template):
+If you need to test or build the `proposal-email/` React Email template:
 
 ```bash
-cd proposal-email
-npm install
-npm run build
+pnpm --filter proposal-email build
+pnpm --filter proposal-email test
 ```
 
 ## Commit Convention
