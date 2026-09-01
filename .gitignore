@@ -18,6 +18,7 @@ dist/
 .superpowers/
 
 # Generated build and test output
+.next/
 .dart_tool/
 build/
 coverage/

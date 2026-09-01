@@ -2,7 +2,35 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
-## 2026-08-29: Allow staging previews in app projects #decision
+## 2026-09-01: Make main the canonical production branch #decision #deployment
+
+`main` is now the canonical repository branch and the production source for the Vercel projects. Each project keeps its own Vercel Root Directory (`apps/comment-lens/`, `apps/piano-tool/`, or `apps/wesnest-search/`), while feature branches use CI and pull-request review before merge. There is no shared `staging` branch; this supersedes the earlier project-branch deployment guidance while preserving the historical record below.
+
+## 2026-08-31: Align monorepo runtime and package ownership #decision #deployment [superseded 2026-09-01]
+
+The Node projects now use the root pnpm workspace and prefer Node 24 for CI and Vercel, while their engine range also permits the repository's current Node 26 verification environment. Piano Tool remains outside that workspace because it has its own Flutter, Python, Android, and Apple-platform toolchains. Vercel projects must keep their app directory and Root Directory aligned in the dashboard; the earlier matching-branch requirement is superseded by the 2026-09-01 `main` production decision.
+
+## 2026-08-31: Remove shared staging branch #decision #deployment
+
+Removed the shared `staging` branch and its automatic Vercel deployment rules. The independently deployed applications keep matching production branches, while feature branches use CI and project-specific review before promotion. This avoids unrelated Vercel builds and keeps each project's deployment root and environment boundary explicit.
+
+## 2026-08-31: Comment Lens database baseline #database #drizzle
+
+The Comment Lens production database was empty when checked. The source tree now uses a Drizzle-generated baseline with migration metadata instead of the incomplete hand-written migration set. The app also records `pg` as a development dependency for Node-based migration commands. The baseline was applied successfully using the raw Neon connection string; Vercel's masked environment export cannot be used to validate that connection locally.
+
+## 2026-08-31: Comment Lens task-first dashboard #design #accessibility
+
+Replaced the Comment Lens landing-page treatment with a task-first review workspace. The dashboard now shows one clear action for each connection, access, scan, and failure state, then shifts to a queue with a focused comment detail view. The visual system uses cool paper, graphite, slate, and cobalt tokens with responsive layouts and keyboard and accessibility coverage. The redesign changes no backend, scanner, source-retention, or repository-write behavior.
+
+## 2026-08-30: Comment Lens monorepo integration #architecture #milestone
+
+Added Comment Lens as a private Next.js dashboard with a Python comment scanner, dedicated CI coverage, and a `comment-lens` Vercel production branch. Service provisioning, credentials, and deployment remain separate operational setup.
+
+## 2026-08-30: Comment Lens production boundaries #decision #security
+
+Kept Tree-sitter as the primary parser with Pygments fallback, retained only comments and short source context, and separated deterministic review-priority scoring from optional on-demand Gemini assessment. GitHub App installation tokens, signed worker chunks, owner-scoped persistence, and explicit `comment-lens` plus `staging` deployment rules formed the production boundary at that time; this staging language is superseded by the 2026-08-31 entry above. No repository files are modified by dashboard review actions.
+
+## 2026-08-29: Allow staging previews in app projects #decision [superseded 2026-08-31]
 
 Piano Tool and WesNest Search now accept Git-triggered deployments from `staging` for Preview, while keeping `piano-tool` and `wesnest-search` as their Production Branches. All other branches, including Dependabot branches, remain disabled.
 

@@ -2,7 +2,12 @@
   "name": "proposal-email",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24 <27"
+  },
   "scripts": {
+    "build": "pnpm exec tsx -e \"import * as React from 'react'; import { render } from '@react-email/render'; import Portal2ProposalEmail from './Portal2ProposalEmail.tsx'; render(React.createElement(Portal2ProposalEmail, {})).then(() => console.log('Rendered proposal email'), (error) => { console.error(error); process.exitCode = 1; })\"",
+    "test": "pnpm run typecheck",
     "typecheck": "tsc --noEmit --jsx react-jsx --module ESNext --moduleResolution Bundler --target ES2022 --skipLibCheck Portal2ProposalEmail.tsx"
   },
   "dependencies": {

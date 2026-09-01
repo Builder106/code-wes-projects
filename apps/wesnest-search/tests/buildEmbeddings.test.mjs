@@ -27,3 +27,30 @@ test('embeds the concatenation of name, categories, and summary', async () => {
   assert.ok(seen[0].includes('Academic, Career'));
   assert.ok(seen[0].includes('Club for students interested in coding.'));
 });
+
+test('retries on rate limit (429/5xx) errors and succeeds', async () => {
+  let attempts = 0;
+  const retryEmbed = async () => {
+    attempts++;
+    if (attempts === 1) {
+      const err = new Error('429 Too Many Requests');
+      throw err;
+    }
+    return [1, 2, 3];
+  };
+  const result = await buildEmbeddings(sampleMarkdown, 'fake-key', retryEmbed);
+  assert.equal(result.length, 2);
+  assert.ok(attempts >= 2);
+});
+
+test('rethrows immediately on non-retryable errors', async () => {
+  const badEmbed = async () => {
+    throw new Error('401 Unauthorized');
+  };
+  await assert.rejects(
+    async () => {
+      await buildEmbeddings(sampleMarkdown, 'fake-key', badEmbed);
+    },
+    { message: '401 Unauthorized' }
+  );
+});

@@ -12,6 +12,8 @@ being kept temporarily while its remaining useful changes are reconciled with
 
 ## v1.1 — Organization & Portal Migration
 
+- **Comment Lens**: Private dashboard for reviewing repository comment style. Production completion includes GitHub App authorization, signed Actions ingestion, managed Postgres migrations, on-demand Gemini assessment, and Linux ARM64 CI verification.
+
 - **Portal 2.0 Redesign**: Modern responsive project portal per [`docs/specs/portal2-migration.md`](docs/specs/portal2-migration.md).
 - **Organization Structure Update**: Finalize repository namespace rename per [`docs/specs/org-rename-plan.md`](docs/specs/org-rename-plan.md).
 
