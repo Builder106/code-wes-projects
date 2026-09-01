@@ -28,6 +28,7 @@ jobs:
   parse:
     name: Parse target repository
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - name: Validate dispatch inputs
         id: validate
@@ -53,7 +54,7 @@ jobs:
           PY
 
       - name: Check out trusted scanner
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           path: trusted-source
           persist-credentials: false
@@ -69,7 +70,7 @@ jobs:
           permission-contents: read
 
       - name: Check out target source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.ref }}
@@ -102,9 +103,10 @@ jobs:
     name: Upload scan
     needs: parse
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Check out trusted uploader
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
 
@@ -127,9 +129,10 @@ jobs:
     if: ${{ always() && (needs.parse.result != 'success' || needs.upload.result != 'success') }}
     needs: [parse, upload]
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Check out trusted uploader
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
 

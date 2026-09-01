@@ -3,12 +3,8 @@ name: Piano Tool CI
 on:
   push:
     branches: [main]
-    paths:
-      - 'apps/piano-tool/**'
   pull_request:
     branches: [main]
-    paths:
-      - 'apps/piano-tool/**'
 
 permissions:
   contents: read
@@ -20,15 +16,16 @@ concurrency:
 jobs:
   flutter:
     name: Flutter (analyze, format, test)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/piano-tool
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: '3.29.0'
+          flutter-version: '3.47.2'
           channel: 'stable'
           cache: true
       - name: Get dependencies
@@ -42,13 +39,14 @@ jobs:
 
   python:
     name: Python (ruff, black, mypy, pytest)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/piano-tool
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -71,7 +69,8 @@ jobs:
 
   summary:
     name: Summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [flutter, python]
     if: always()
     steps:

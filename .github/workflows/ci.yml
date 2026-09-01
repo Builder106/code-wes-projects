@@ -17,25 +17,28 @@ jobs:
   secrets:
     name: Secret scan
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v3
+      - uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e
         env:
           GITLEAKS_NOTIFY_USER_LIST: ""
 
   wesnest:
     name: WesNest Search
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
     - name: Set up pnpm and Node.js
-      uses: pnpm/setup@v1
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
       with:
-        runtime: node@26
-        cache: true
-        install: false
+        node-version-file: .node-version
+        cache: pnpm
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
     - name: Syntax and lint check
@@ -49,14 +52,16 @@ jobs:
   proposal_email:
     name: Proposal Email
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
     - name: Set up pnpm and Node.js
-      uses: pnpm/setup@v1
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
       with:
-        runtime: node@26
-        cache: true
-        install: false
+        node-version-file: .node-version
+        cache: pnpm
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
     - name: Type check
@@ -65,16 +70,18 @@ jobs:
   comment_lens:
     name: Comment Lens
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
     - name: Set up pnpm and Node.js
-      uses: pnpm/setup@v1
+      uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+    - name: Set up Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
       with:
-        runtime: node@26
-        cache: true
-        install: false
+        node-version-file: .node-version
+        cache: pnpm
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
       with:
         python-version: "3.12"
         cache: pip
@@ -101,16 +108,132 @@ jobs:
       run: pnpm --filter comment-lens exec playwright install --with-deps chromium
     - name: Run end-to-end tests
       run: pnpm --filter comment-lens test:e2e
+    - name: Upload Comment Lens test artifacts
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: comment-lens-test-results-${{ github.run_id }}
+        path: |
+          apps/comment-lens/test-results
+          apps/comment-lens/playwright-report
+        if-no-files-found: ignore
+        retention-days: 7
+  postgres_integration:
+    name: Comment Lens Postgres integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: [comment_lens]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: comment_lens
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d comment_lens"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply database migrations before tests
+        run: pnpm --filter comment-lens db:migrate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/comment_lens
+      - name: Run Postgres integration tests
+        run: pnpm --filter comment-lens test -- --test-name-pattern='database|data|migration'
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/comment_lens
+      - name: Upload Postgres integration artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: postgres-integration-${{ github.run_id }}
+          path: apps/comment-lens/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  performance:
+    name: Comment Lens performance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: [comment_lens]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: comment_lens
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d comment_lens"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply database migrations before benchmark
+        run: pnpm --filter comment-lens db:migrate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/comment_lens
+      - name: Run performance tests
+        run: pnpm --filter comment-lens test:performance
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/comment_lens
+      - name: Upload performance artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: comment-lens-performance-${{ github.run_id }}
+          path: apps/comment-lens/tests/performance/artifacts/large-comments.json
+          if-no-files-found: error
+          retention-days: 7
+
+  worker:
+    name: Comment Lens worker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: [comment_lens]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.12"
+      - name: Install worker dependencies
+        run: python -m pip install --disable-pip-version-check -e apps/comment-lens/scanner pytest
+      - name: Run worker tests
+        run: python -m pytest apps/comment-lens/scanner apps/comment-lens/worker
+      - name: Upload worker artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: comment-lens-worker-${{ github.run_id }}
+          path: apps/comment-lens/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
   summary:
     name: JavaScript checks summary
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     if: always()
-    needs: [secrets, wesnest, proposal_email, comment_lens]
+    needs: [secrets, wesnest, proposal_email, comment_lens, postgres_integration, performance, worker]
     steps:
     - name: Check all jobs passed
       run: |
-        if [[ "${{ needs.secrets.result }}" != "success" ]] || [[ "${{ needs.wesnest.result }}" != "success" ]] || [[ "${{ needs.proposal_email.result }}" != "success" ]] || [[ "${{ needs.comment_lens.result }}" != "success" ]]; then
-          echo "One or more JavaScript checks failed"
+        if [[ "${{ needs.secrets.result }}" != "success" ]] || [[ "${{ needs.wesnest.result }}" != "success" ]] || [[ "${{ needs.proposal_email.result }}" != "success" ]] || [[ "${{ needs.comment_lens.result }}" != "success" ]] || [[ "${{ needs.postgres_integration.result }}" != "success" ]] || [[ "${{ needs.performance.result }}" != "success" ]] || [[ "${{ needs.worker.result }}" != "success" ]]; then
+          echo "One or more CI checks failed"
           exit 1
         fi
-        echo "All JavaScript checks passed"
+        echo "All CI checks passed"
