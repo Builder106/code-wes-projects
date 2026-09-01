@@ -21,7 +21,16 @@ test('handles an empty categories column', () => {
   assert.equal(allbritton.categories, '');
 });
 
-test('ignores the title and header/separator rows', () => {
-  const orgs = parseClubsMarkdown(fixture);
-  assert.ok(orgs.every((o) => o.name !== 'Name' && o.name !== '---'));
+test('ignores non-table lines, headers, separators, and malformed rows', () => {
+  const markdown = `
+# Title
+Some intro text
+| Not enough cells |
+| Name | Categories | Summary |
+| --- | --- | --- |
+| Valid Club | Category | Great description |
+`;
+  const orgs = parseClubsMarkdown(markdown);
+  assert.equal(orgs.length, 1);
+  assert.equal(orgs[0].name, 'Valid Club');
 });

@@ -8,25 +8,26 @@ similarity to a natural-language query.
 ## Refreshing the data
 
 ```bash
-npm run scrape-clubs        # WesNest -> data/wesleyan_clubs.md
-npm run build-embeddings    # data/wesleyan_clubs.md -> data/orgs-embeddings.json
+pnpm --filter wesnest-search scrape-clubs
+pnpm --filter wesnest-search build-embeddings
 ```
 
 Commit both files and redeploy.
 
 ## Development
 
-Requires `GEMINI_API_KEY` in the environment. Run `npm test` for unit
-tests, `npm run test:e2e` for Playwright checks.
+Requires `GEMINI_API_KEY` in the environment. Run
+`pnpm --filter wesnest-search test` for unit tests and
+`pnpm --filter wesnest-search test:e2e` for Playwright checks.
 
 ## Deployment
 
-The app is deployed from this monorepo through Vercel. Its project root is
-`apps/wesnest-search/`; keep deployment configuration aligned with that path.
-`GEMINI_API_KEY` is set as a Sensitive environment variable on Production via
-the Vercel dashboard/CLI. Never commit it.
+The app is deployed from this monorepo through Vercel. `main` is the canonical
+and production branch, and the Vercel Root Directory for this project is
+`apps/wesnest-search/`. There is no shared `staging` branch. Feature branches
+use CI and pull-request review before they are merged to `main`.
 
-Only the `wesnest-search` branch deploys this project. `main`, `staging`,
-feature branches, and Dependabot branches are blocked by `vercel.json`. To
-create the production deployment manually, run
-`pnpm deploy:vercel wesnest-search` from that branch.
+`GEMINI_API_KEY` is set as a Sensitive environment variable on Production in
+the Vercel dashboard. Never commit it. A merge to `main` starts the configured
+production deployment for this app; keep the Vercel Root Directory and build
+settings aligned with `apps/wesnest-search/`.

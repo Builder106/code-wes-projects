@@ -1,9 +1,13 @@
 packages:
   - apps/wesnest-search
+  - apps/comment-lens
   - proposal-email
 
 allowBuilds:
+  '@google/genai': true
   esbuild: true
+  protobufjs: true
+  unrs-resolver: true
 
 minimumReleaseAgeExclude:
   - resend@6.25.0

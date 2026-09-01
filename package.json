@@ -2,9 +2,19 @@
   "name": "code-wes-projects",
   "private": true,
   "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=24 <27"
+  },
   "scripts": {
     "deploy:vercel": "node scripts/deploy-vercel.mjs",
+    "build": "pnpm run build:comment-lens && pnpm run build:proposal-email",
+    "build:comment-lens": "pnpm --filter comment-lens build",
+    "build:proposal-email": "pnpm --filter proposal-email build",
+    "typecheck:comment-lens": "pnpm --filter comment-lens typecheck",
+    "test:comment-lens": "pnpm --filter comment-lens test",
     "test:wesnest": "pnpm --filter wesnest-search test",
-    "typecheck:proposal-email": "pnpm --filter proposal-email typecheck"
+    "test:proposal-email": "pnpm --filter proposal-email test",
+    "typecheck:proposal-email": "pnpm --filter proposal-email typecheck",
+    "test": "pnpm run test:comment-lens && pnpm run test:wesnest && pnpm run test:proposal-email"
   }
 }
