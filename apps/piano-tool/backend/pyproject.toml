@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools<85", "wheel"]
+requires = ["setuptools<81", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -144,4 +144,3 @@ exclude_lines = [
     "raise NotImplementedError",
     "if TYPE_CHECKING:",
 ]
-
