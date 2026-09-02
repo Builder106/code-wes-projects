@@ -109,15 +109,20 @@ class StageController extends StateNotifier<StageUiState> {
   /// resets its own timer; if the note is not heard again within the decay
   /// window, it drops out of [StageUiState.sounding].
   final Map<int, Timer> _soundingTimers = {};
+  bool _suppressEngineEvents = false;
+  bool _suppressStateNotifications = false;
   static const Duration _soundingDecay = Duration(milliseconds: 350);
 
   static const double minSpeed = 0.5;
   static const double maxSpeed = 2.0;
 
-  void start() {
+  StageEngineStatus get engineStatus => _engine.state.engineState;
+
+  Future<void> start() async {
+    _suppressEngineEvents = false;
     _engine.start();
-    _progress.setLastPlayed(_stageId);
     _sync();
+    await _progress.setLastPlayed(_stageId);
   }
 
   void pause() {
@@ -133,11 +138,22 @@ class StageController extends StateNotifier<StageUiState> {
   }
 
   /// Halts and holds position. Distinct from [replay], which rewinds.
-  void stop() {
+  void stop({bool syncState = true}) {
+    _suppressEngineEvents = !syncState;
     _engine.stop();
-    _sync();
-    // Nothing is being listened for once stopped, so no key should stay lit.
-    _clearSounding();
+    if (syncState) {
+      _sync();
+      // Nothing is being listened for once stopped, so no key should stay lit.
+      _clearSounding();
+    } else {
+      // The practice screen can be disposed while Riverpod is finalizing a
+      // route. Keep direct reads accurate without notifying listeners that are
+      // being unmounted.
+      _updateSilently(() {
+        _sync();
+        _clearSounding();
+      });
+    }
   }
 
   /// A detected pitch both scores against the level and lights the keyboard.
@@ -193,6 +209,7 @@ class StageController extends StateNotifier<StageUiState> {
   }
 
   void _onEvent(StageEvent event) {
+    if (_suppressEngineEvents) return;
     _sync();
     event.whenOrNull(stageCompleted: (accuracy, score, totalNotes, hitNotes) {
       _progress.record(stageId: _stageId, accuracy: accuracy, score: score);
@@ -208,6 +225,22 @@ class StageController extends StateNotifier<StageUiState> {
       accuracy: s.accuracy,
       status: s.engineState,
     );
+  }
+
+  void _updateSilently(void Function() update) {
+    final wasSuppressed = _suppressStateNotifications;
+    _suppressStateNotifications = true;
+    try {
+      update();
+    } finally {
+      _suppressStateNotifications = wasSuppressed;
+    }
+  }
+
+  @override
+  bool updateShouldNotify(StageUiState old, StageUiState current) {
+    if (_suppressStateNotifications) return false;
+    return super.updateShouldNotify(old, current);
   }
 
   @override
