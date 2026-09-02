@@ -13,6 +13,5 @@ uvicorn[standard]
 pydantic>=2
 python-multipart
 httpx2
-httpx
 pytest
 yt-dlp
