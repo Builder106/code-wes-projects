@@ -76,7 +76,7 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
     // is not autoDispose, so leaving mid-song would keep the song running,
     // marking notes missed and eventually recording a completion the learner
     // never played.
-    if (_controller.mounted) _controller.stop();
+    if (_controller.mounted) _controller.stop(syncState: false);
     super.dispose();
   }
 
