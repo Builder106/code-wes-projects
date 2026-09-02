@@ -3,7 +3,7 @@ from typing import Any, Literal, cast
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
-from app.jobs import Job, JobStore
+from .jobs import Job, JobStore
 
 router = APIRouter()
 store = JobStore()
