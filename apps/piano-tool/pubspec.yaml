@@ -45,7 +45,7 @@ dev_dependencies:
   riverpod_generator: ^2.3.9
   custom_lint: ^0.7.3
   riverpod_lint: ^2.3.7
-  mockito: ^5.4.4
+  mockito: ^5.4.6
 
 flutter:
   uses-material-design: true
