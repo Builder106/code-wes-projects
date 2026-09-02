@@ -6,6 +6,10 @@
 
 `main` is now the canonical repository branch and the production source for the Vercel projects. Each project keeps its own Vercel Root Directory (`apps/comment-lens/`, `apps/piano-tool/`, or `apps/wesnest-search/`), while feature branches use CI and pull-request review before merge. There is no shared `staging` branch; this supersedes the earlier project-branch deployment guidance while preserving the historical record below.
 
+## 2026-09-01: Make WesNest's static output explicit #decision #deployment
+
+Set WesNest Search's Vercel `outputDirectory` to `.` because its static files live at the project root. This keeps the repository configuration aligned with the app's Root Directory and prevents a stale dashboard `public` override from failing production builds.
+
 ## 2026-08-31: Align monorepo runtime and package ownership #decision #deployment [superseded 2026-09-01]
 
 The Node projects now use the root pnpm workspace and prefer Node 24 for CI and Vercel, while their engine range also permits the repository's current Node 26 verification environment. Piano Tool remains outside that workspace because it has its own Flutter, Python, Android, and Apple-platform toolchains. Vercel projects must keep their app directory and Root Directory aligned in the dashboard; the earlier matching-branch requirement is superseded by the 2026-09-01 `main` production decision.
