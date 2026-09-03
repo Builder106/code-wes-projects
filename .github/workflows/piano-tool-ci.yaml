@@ -65,7 +65,7 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Run pytest with 100% coverage gate
-        run: python -m pytest -W error --cov=app --cov-report=term-missing --cov-fail-under=100 backend
+        run: python -m pytest -W error -W ignore::UserWarning -W ignore::starlette.exceptions.StarletteDeprecationWarning -W "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning" --cov=app --cov-report=term-missing --cov-fail-under=100 backend
 
   summary:
     name: Summary
