@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from tempfile import TemporaryDirectory
 from typing import Literal
 
-from app.acquire import acquire_audio
-from app.errors import AudioTooLongError, NoNotesDetectedError, YoutubeUnavailableError
-from app.models import LevelModel
-from app.quantize import quantize_notes
-from app.tempo import estimate_tempo
-from app.transcribe import transcribe
+from .acquire import acquire_audio
+from .errors import AudioTooLongError, NoNotesDetectedError, YoutubeUnavailableError
+from .models import LevelModel
+from .quantize import quantize_notes
+from .tempo import estimate_tempo
+from .transcribe import transcribe
 
 JobStatus = Literal["queued", "downloading", "transcribing", "done", "failed"]
 

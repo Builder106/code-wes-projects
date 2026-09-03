@@ -3,7 +3,7 @@ import soundfile as sf
 from basic_pitch import ICASSP_2022_MODEL_PATH
 from basic_pitch.inference import predict
 
-from app.quantize import NoteEvent
+from .quantize import NoteEvent
 
 
 def transcribe(audio_path: str) -> list[NoteEvent]:
