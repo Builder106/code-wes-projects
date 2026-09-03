@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routes import router
+from .routes import router
 
 app = FastAPI(title="Piano-Tool Ingestion Service")
 app.include_router(router)

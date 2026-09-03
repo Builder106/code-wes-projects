@@ -1,7 +1,7 @@
 import math
 from dataclasses import dataclass
 
-from app.models import LevelMeasure, LevelModel, LevelNote
+from .models import LevelMeasure, LevelModel, LevelNote
 
 SIXTEENTH_NOTE_BEATS = 0.25
 MIN_DURATION_BEATS = 0.25

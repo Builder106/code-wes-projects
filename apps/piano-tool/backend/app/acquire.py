@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Literal
 from urllib.parse import urlparse
 
-from app.errors import AudioTooLongError, NoNotesDetectedError, YoutubeUnavailableError
+from .errors import AudioTooLongError, NoNotesDetectedError, YoutubeUnavailableError
 
 DEFAULT_DURATION_CAP_SECONDS = 600.0
 
