@@ -54,7 +54,7 @@ const project = projects[projectName];
 if (branch !== project.branch) {
   console.error(
     `Refusing to deploy ${projectName} from ${branch || "a detached HEAD"}. ` +
-      `Deploy it only from ${project.branch}.`,
+    `Deploy it only from ${project.branch}.`,
   );
   process.exit(1);
 }
