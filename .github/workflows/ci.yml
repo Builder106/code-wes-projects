@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -224,16 +224,69 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  piano_tool_flutter:
+    name: Piano Tool Flutter (analyze, format, test)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/piano-tool
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.2'
+          channel: 'stable'
+          cache: true
+      - name: Get dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+      - name: Check format
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+  piano_tool_python:
+    name: Piano Tool Python (ruff, black, mypy, pytest)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: apps/piano-tool
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+          bash backend/scripts/install_basic_pitch.sh
+      - name: Install lint tools
+        run: python -m pip install ruff black mypy pytest-cov
+      - name: Ruff lint
+        run: python -m ruff check backend
+      - name: Black format check
+        run: python -m black --check backend
+      - name: Mypy type check
+        run: python -m mypy --config-file backend/pyproject.toml backend/app --strict --ignore-missing-imports
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Run pytest with 100% coverage gate
+        run: python -m pytest -W error -W ignore::UserWarning -W ignore::starlette.exceptions.StarletteDeprecationWarning -W "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning" --cov=app --cov-report=term-missing --cov-fail-under=100 backend
+
   summary:
-    name: JavaScript checks summary
+    name: CI summary
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     if: always()
-    needs: [secrets, wesnest, proposal_email, comment_lens, postgres_integration, performance, worker]
+    needs: [secrets, wesnest, proposal_email, comment_lens, postgres_integration, performance, worker, piano_tool_flutter, piano_tool_python]
     steps:
     - name: Check all jobs passed
       run: |
-        if [[ "${{ needs.secrets.result }}" != "success" ]] || [[ "${{ needs.wesnest.result }}" != "success" ]] || [[ "${{ needs.proposal_email.result }}" != "success" ]] || [[ "${{ needs.comment_lens.result }}" != "success" ]] || [[ "${{ needs.postgres_integration.result }}" != "success" ]] || [[ "${{ needs.performance.result }}" != "success" ]] || [[ "${{ needs.worker.result }}" != "success" ]]; then
+        if [[ "${{ needs.secrets.result }}" != "success" ]] || [[ "${{ needs.wesnest.result }}" != "success" ]] || [[ "${{ needs.proposal_email.result }}" != "success" ]] || [[ "${{ needs.comment_lens.result }}" != "success" ]] || [[ "${{ needs.postgres_integration.result }}" != "success" ]] || [[ "${{ needs.performance.result }}" != "success" ]] || [[ "${{ needs.worker.result }}" != "success" ]] || [[ "${{ needs.piano_tool_flutter.result }}" != "success" ]] || [[ "${{ needs.piano_tool_python.result }}" != "success" ]]; then
           echo "One or more CI checks failed"
           exit 1
         fi
