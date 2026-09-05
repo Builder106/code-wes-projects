@@ -1,21 +1,13 @@
 import { execFileSync, spawnSync } from "node:child_process";
 
 const projects = {
-  "piano-tool": {
-    directory: "apps/piano-tool",
-    branch: "main",
-  },
   "wesnest-search": {
     directory: "apps/wesnest-search",
     branch: "main",
   },
-  "comment-lens": {
-    directory: "apps/comment-lens",
-    branch: "main",
-  },
 };
 
-const usage = "Usage: pnpm deploy:vercel <piano-tool|wesnest-search|comment-lens> [vercel options]";
+const usage = "Usage: pnpm deploy:vercel <wesnest-search> [vercel options]";
 const [projectName, ...vercelArgs] = process.argv.slice(2);
 
 if (projectName === "--help" || projectName === "-h") {
