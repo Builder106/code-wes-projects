@@ -1,11 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directories:
-      - "/"
-      - "/apps/comment-lens"
-      - "/apps/wesnest-search"
-      - "/proposal-email"
+    directory: "/"
     schedule:
       interval: "weekly"
     groups:
