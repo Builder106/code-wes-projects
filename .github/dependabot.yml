@@ -8,22 +8,7 @@ updates:
       npm:
         patterns:
           - "*"
-  - package-ecosystem: "pip"
-    directory: "/apps/comment-lens/scanner"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pip"
-    directory: "/apps/piano-tool/backend"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "pub"
-    directory: "/apps/piano-tool"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "gradle"
-    directory: "/apps/piano-tool/android"
-    schedule:
-      interval: "weekly"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
