@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --test --test-name-pattern='^(?!.*Playwright)' 'tests/**/*.test.mjs'",
     "test:coverage": "node --experimental-test-coverage --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100 --test-coverage-include='lib/**' --test-coverage-include='api/**' --test 'tests/**/*.test.mjs'",
-    "test:e2e": "playwright test tests/scrapeClubs.spec.mjs tests/frontend.spec.mjs",
+    "test:e2e": "playwright test tests/scrapeClubs.spec.mjs tests/frontend.spec.mjs tests/responsiveness.spec.mjs",
+    "test:e2e:frontend": "playwright test tests/frontend.spec.mjs tests/responsiveness.spec.mjs",
     "build-embeddings": "node scripts/build-embeddings.mjs",
     "scrape-clubs": "node scripts/scrape-clubs.mjs"
   },

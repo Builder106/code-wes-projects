@@ -49,6 +49,10 @@ jobs:
         node --check apps/wesnest-search/api/search.js
     - name: Run unit tests with 100% coverage gate
       run: pnpm --filter wesnest-search test:coverage
+    - name: Install Playwright browser
+      run: pnpm --filter wesnest-search exec playwright install --with-deps chromium
+    - name: Run browser smoke tests
+      run: pnpm --filter wesnest-search test:e2e
 
   proposal_email:
     name: Proposal Email
