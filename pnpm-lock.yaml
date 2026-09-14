@@ -11,7 +11,7 @@ importers:
   apps/wesnest-search:
     devDependencies:
       '@playwright/test':
-        specifier: ^1.63.0
+        specifier: 1.63.0
         version: 1.63.0
       serve:
         specifier: ^14.2.6
