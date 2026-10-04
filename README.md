@@ -8,7 +8,7 @@ Code-Wes is the student-run Computer Science organization at Wesleyan University
 
 This repository is the canonical home for the club's project plans, application prototypes, and related engineering notes. It keeps projects together while they are being developed and makes their history easy to follow.
 
-JavaScript and TypeScript packages in this hub use the root pnpm workspace (`apps/wesnest-search` and `proposal-email`). Node 24 is the preferred release runtime, with the package engine range also covering the repository's current Node 26 verification environment. WesNest Search is a deployable web application, and Proposal Email is a shared React Email package.
+JavaScript and TypeScript packages in this hub use the root pnpm workspace (`apps/wesnest-search` and `proposal-email`). Node 24 is the preferred release runtime. WesNest Search is a deployable web application, and Proposal Email is a shared React Email package.
 
 ## Featured Initiatives
 
