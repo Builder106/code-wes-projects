@@ -23,24 +23,24 @@ importers:
         specifier: 1.0.12
         version: 1.0.12(react-dom@19.2.8(react@19.3.0))(react@19.3.0)
       dotenv:
-        specifier: ^18.0.5
-        version: 18.0.5
+        specifier: ^18.0.6
+        version: 18.0.6
       nodemailer:
-        specifier: ^10.0.13
-        version: 10.0.13
+        specifier: ^10.0.16
+        version: 10.0.16
       react:
         specifier: ^19.3.0
         version: 19.3.0
       resend:
-        specifier: ^6.31.0
-        version: 6.31.0(@react-email/render@2.1.0(react-dom@19.2.8(react@19.3.0))(react@19.3.0))
+        specifier: ^6.32.1
+        version: 6.32.1(@react-email/render@2.1.0(react-dom@19.2.8(react@19.3.0))(react@19.3.0))
     devDependencies:
       '@react-email/render':
         specifier: ^2.1.0
         version: 2.1.0(react-dom@19.2.8(react@19.3.0))(react@19.3.0)
       '@types/node':
-        specifier: ^26.6.3
-        version: 26.6.3
+        specifier: ^26.6.4
+        version: 26.6.4
       '@types/nodemailer':
         specifier: ^8.0.2
         version: 8.0.2
@@ -412,8 +412,8 @@ packages:
   '@stablelib/base64@1.0.1':
     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
 
-  '@types/node@26.6.3':
-    resolution: {integrity: sha512-dsqMQQoeTLqu9wynDD00q573mNzso3IdQOAfHRJqLCcmCFPoGo9A1bDpUcv/9tnKpErQWv9uKeGfl37EIS02Yg==}
+  '@types/node@26.6.4':
+    resolution: {integrity: sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==}
 
   '@types/nodemailer@8.0.2':
     resolution: {integrity: sha512-c7M5ox8p0nEOfbJ2E9Qcmt8/QCu/VzsiAhzBiZbvky2PhKZDHpKB3sQHBM5MEZNkCfBOaS6S9//AGPRTNB7IaA==}
@@ -677,8 +677,8 @@ packages:
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
 
-  dotenv@18.0.5:
-    resolution: {integrity: sha512-aBrGvt6KhjxbEnatqMWOMidftwsrCiCvqh1yNIGB9QyF0J+VcWkKDMsvYOEm7ZS82oiV+BT1sTOtIlAmUlTpwQ==}
+  dotenv@18.0.6:
+    resolution: {integrity: sha512-ZMVmohV6CvAJtj++pZNyggluUt6hbRdQAxc2+Z635RL6/AG/ruXv5lHnybUFoxMPL/yrTL/tsF4paZu2l7RA6Q==}
     engines: {node: '>=12'}
     hasBin: true
 
@@ -810,8 +810,8 @@ packages:
     resolution: {integrity: sha512-myRT3DiWPHqho5PrJaIRyaMv2kgYf0mUVgBNOYMuCH5Ki1yEiQaf/ZJuQ62nvpc44wL5WDbTX7yGJi1Neevw8w==}
     engines: {node: '>= 0.6'}
 
-  nodemailer@10.0.13:
-    resolution: {integrity: sha512-SzG86OlvcW/NNhUFC6uROMwRTL4n7MswfQqC/T8mhkmnY1YVa23zUEMYi4ijSeXSl9GLz9ZeTJDUatEDuY5FeQ==}
+  nodemailer@10.0.16:
+    resolution: {integrity: sha512-VL9xKErxN+el77o8eBOuYKUPMyEx7F9hfnDCuiUKJRp9v3wnWMOudYgP/SWbwSHy8rUL4cylobuXtki1LpQS7A==}
     engines: {node: '>=20.0.0'}
 
   npm-run-path@4.0.1:
@@ -892,8 +892,8 @@ packages:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
 
-  resend@6.31.0:
-    resolution: {integrity: sha512-E9Ekrm888UKKCIY61UmDkgRVd2Q9OwihimgStrWJ4olNsjFYM25F4X8QbzrLuZz6W9iS7eLMS7MLbRBNqnlI/Q==}
+  resend@6.32.1:
+    resolution: {integrity: sha512-Z9DxkIZt5uvVNkjxjc+r4rCPI0MdDIJ7H+GvU50o9GkhrD0tVTwP6caE8KYEco90sos312l6R72jAEMCBFBiFQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@react-email/render': '*'
@@ -1224,13 +1224,13 @@ snapshots:
 
   '@stablelib/base64@1.0.1': {}
 
-  '@types/node@26.6.3':
+  '@types/node@26.6.4':
     dependencies:
       undici-types: 8.9.0
 
   '@types/nodemailer@8.0.2':
     dependencies:
-      '@types/node': 26.6.3
+      '@types/node': 26.6.4
 
   '@types/react-dom@19.3.0(@types/react@19.3.0)':
     dependencies:
@@ -1432,7 +1432,7 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
 
-  dotenv@18.0.5: {}
+  dotenv@18.0.6: {}
 
   eastasianwidth@0.2.0: {}
 
@@ -1559,7 +1559,7 @@ snapshots:
 
   negotiator@0.6.4: {}
 
-  nodemailer@10.0.13: {}
+  nodemailer@10.0.16: {}
 
   npm-run-path@4.0.1:
     dependencies:
@@ -1623,7 +1623,7 @@ snapshots:
 
   require-from-string@2.0.2: {}
 
-  resend@6.31.0(@react-email/render@2.1.0(react-dom@19.2.8(react@19.3.0))(react@19.3.0)):
+  resend@6.32.1(@react-email/render@2.1.0(react-dom@19.2.8(react@19.3.0))(react@19.3.0)):
     dependencies:
       postal-mime: 2.7.6
       standardwebhooks: 1.1.1
