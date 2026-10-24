@@ -6,6 +6,7 @@
     "node": ">=24 <27"
   },
   "scripts": {
+    "dev:wesnest": "pnpm --filter wesnest-search dev",
     "deploy:vercel": "node scripts/deploy-vercel.mjs",
     "build": "pnpm run build:proposal-email",
     "build:proposal-email": "pnpm --filter proposal-email build",
