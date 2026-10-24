@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-23: Enable strict proposal email typechecking #ci #decision
+
+The proposal email's existing CI typecheck now runs with TypeScript strict mode.
+
 ## 2026-09-05: Graduate Comment Lens and Piano Tool to standalone repositories #architecture #decoupling
 
 Graduated Comment Lens and Piano Tool out of the monorepo into their dedicated canonical standalone repositories (`Builder106/comment-lens` and `Builder106/piano-tool`). Removed their source trees, CI matrix jobs, scanner/worker pipelines, and auxiliary workflows from `code-wes-projects`. The root pnpm workspace and CI pipeline now focus exclusively on WesNest Search and Proposal Email.
