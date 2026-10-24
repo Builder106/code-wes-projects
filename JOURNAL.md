@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-24: Scaffold WesNest Search developer workflow and roadmap for Code_Wes #scaffold #dx #roadmap
+
+Prepped the repository for the Code_Wes student engineering team to complete the WesNest Semantic Search project. Added a zero-dependency local HTTP development server (`scripts/dev-server.mjs`) routing to `/api/search.js` alongside static assets, created `.env.example`, authored comprehensive team onboarding and contribution guides in `apps/wesnest-search/`, established a task issue template in `.github/ISSUE_TEMPLATE/`, and expanded `ROADMAP.md` with targeted delivery milestones across data scraping, backend filtering, frontend UI/a11y polish, and E2E verification.
+
 ## 2026-10-23: Enable strict proposal email typechecking #ci #decision
 
 The proposal email's existing CI typecheck now runs with TypeScript strict mode.
