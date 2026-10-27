@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-10-27: Build and audit the proposal email in CI #ci #decision
+
+The proposal email job now runs its existing build command and audits production packages from `pnpm-lock.yaml`. CI stops when the build fails or the audit reports a production vulnerability.
+
 ## 2026-10-24: Reconcile repository roadmap and close retired v1.1 issues #roadmap #hygiene
 
 Reconciled `ROADMAP.md` to reflect the graduation of Comment Lens and Piano Tool to standalone repositories, removing obsolete v1.1 task items. Closed legacy v1.1 tracker issues (#38, #39, #41) so the issue tracker is fully aligned with the active v1.2 WesNest Semantic Search milestone (#47).

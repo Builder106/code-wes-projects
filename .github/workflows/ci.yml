@@ -69,8 +69,12 @@ jobs:
         cache: pnpm
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
+    - name: Audit production dependencies
+      run: pnpm audit --prod --audit-level=high
     - name: Type check
       run: pnpm --filter proposal-email typecheck
+    - name: Build proposal email
+      run: pnpm --filter proposal-email build
 
   summary:
     name: CI summary
