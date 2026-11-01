@@ -3,8 +3,16 @@ name: CI
 on:
   push:
     branches: [ "main", "staging" ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.markdownlint*'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.markdownlint*'
 
 permissions:
   contents: read
@@ -49,8 +57,22 @@ jobs:
         node --check apps/wesnest-search/api/search.js
     - name: Run unit tests with 100% coverage gate
       run: pnpm --filter wesnest-search test:coverage
-    - name: Install Playwright browser
+    - name: Cache Playwright browsers
+      id: playwright-cache
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
+
+    - name: Install Playwright Chromium + system deps
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: pnpm --filter wesnest-search exec playwright install --with-deps chromium
+
+    - name: Install Playwright system deps only (cache hit)
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: pnpm --filter wesnest-search exec playwright install-deps chromium
     - name: Run browser smoke tests
       run: pnpm --filter wesnest-search test:e2e
 
