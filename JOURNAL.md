@@ -2,6 +2,10 @@
 
 > Dated log of decisions, pitches, and engineering direction for the Code-Wes Computer Science club at Wesleyan University. Reverse-chronological; one paragraph max per entry.
 
+## 2026-11-06: Add description and OpenGraph tags to WesNest search #decision
+
+The search page had only a title. It now has a description and text-only OpenGraph and Twitter tags with a `summary` card. There is no card image and no `og:url` on purpose: the app has no brand art yet and no fixed domain to point at. Add both when it gets either.
+
 ## 2026-10-27: Build and audit the proposal email in CI #ci #decision
 
 The proposal email job now runs its existing build command and audits production packages from `pnpm-lock.yaml`. CI stops when the build fails or the audit reports a production vulnerability.
