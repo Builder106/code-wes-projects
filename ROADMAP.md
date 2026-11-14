@@ -1,6 +1,6 @@
 # Code-Wes-Projects Roadmap
 
-Wesleyan student computing club project directory and showcase roadmap.
+Plans for the Wesleyan student computing club's project directory and showcase.
 
 ## Repository direction
 
@@ -18,11 +18,11 @@ prototypes, and specifications. Graduated applications (`comment-lens` and
 
 Led by the **Code_Wes** student engineering team:
 
-- **Data Pipeline & URL Resolution**: Enhance scraper to extract direct WesNest club profile links (`/engage/organization/<slug>`) and preserve categories across table parsing and precomputed embeddings.
+- **Data Pipeline & URL Resolution**: Extract direct WesNest club profile links (`/engage/organization/<slug>`) and preserve categories through table parsing and precomputed embeddings.
 - **Search API Filtering & Pagination**: Add optional category filters, pagination bounds (`limit`/`offset`), and relevance thresholds in `api/search.js`.
-- **Frontend UI/UX & Wesleyan Design System**: Elevate `apps/wesnest-search/index.html` to an accessible, responsive Alpine.js interface with Wesleyan Cardinal Red palette, loading skeletons, query suggestions, and direct club links.
-- **E2E & Responsive Test Coverage**: Expand Playwright test suites covering debouncing, cancellation, mobile viewports, and keyword-fallback degradation.
-- **Campus Launch & Feedback**: Establish student feedback mechanisms and production deployment on Vercel.
+- **Frontend UI/UX & Wesleyan Design System**: Build an accessible, responsive Alpine.js interface in `apps/wesnest-search/index.html` with Wesleyan Cardinal Red, loading skeletons, query suggestions, and direct club links.
+- **E2E & Responsive Test Coverage**: Expand Playwright coverage for debouncing, cancellation, mobile viewports, and keyword-fallback degradation.
+- **Campus Launch & Feedback**: Set up student feedback and production deployment on Vercel.
 
 ## v1.3: Project Showcase and Submissions
 

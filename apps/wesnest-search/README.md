@@ -10,7 +10,7 @@ Developed by the **Code_Wes** student engineering team at Wesleyan University.
 
 Wesleyan's official WesNest directory (`wesleyan.campuslabs.com/engage/organizations`) only matches exact substrings in organization names. If a student searches for "community service", "public speaking", "robotics", or "tinkering with hardware", WesNest returns zero matches unless those exact words appear in the club's name.
 
-With over 270 registered campus organizations, manual browsing does not scale. WesNest Semantic Search embeds club names, categories, and descriptions using Google Gemini embeddings (`text-embedding-004`) to rank results by semantic relevance to natural-language student queries.
+With over 270 registered campus organizations, browsing the full directory takes time. WesNest Semantic Search uses Google Gemini embeddings (`text-embedding-004`) to compare a student's query with club names, categories, and descriptions, then ranks the results by semantic relevance.
 
 ---
 
@@ -33,9 +33,9 @@ Student Query ("something with public speaking")
        └─► 3. Rank, slice top results, return JSON
 ```
 
-- **Frontend**: Zero-bundler static single-page app in `index.html` powered by Alpine.js via CDN. Fast, lightweight, and accessible.
+- **Frontend**: A static single-page app in `index.html`, using Alpine.js from a CDN without a bundler.
 - **Backend API**: Plain Node.js Vercel serverless function (`api/search.js`). Keeps the Gemini API key secure on the server side.
-- **Resilience / Fallback**: If the Gemini embedding call is rate-limited or unavailable, the backend automatically degrades to keyword matching across the org database so search never completely breaks.
+- **Resilience / Fallback**: If the Gemini embedding call is rate-limited or unavailable, the backend falls back to keyword matching across the org database.
 - **Offline / Precomputed Embeddings**: Club descriptions are precomputed in `data/orgs-embeddings.json`. No runtime database connection is required.
 
 ---

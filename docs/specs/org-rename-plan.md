@@ -1,10 +1,10 @@
 # Code-Wes GitHub Organization Rename Plan
 
-The `Code-Wes` GitHub organization currently suffers from redundant naming conventions and inconsistent casing across its repositories. This document proposes a cleaner, standard naming convention for the club's repos.
+The `Code-Wes` GitHub organization has repository names with inconsistent casing, and some repeat the organization's name. This plan proposes a naming convention for the club's repos.
 
 ## The Problem
 
-Because the organization itself is already named `Code-Wes`, including `code_wes`in the repository names leads to highly redundant URLs (e.g.,`github.com/Code-Wes/code_wes_website`).
+Because the organization is already named `Code-Wes`, including `code_wes` in a repository name repeats it in the URL (e.g., `github.com/Code-Wes/code_wes_website`).
 
 Additionally, the repos currently use three different casing styles:
 
@@ -14,7 +14,7 @@ Additionally, the repos currently use three different casing styles:
 
 ## The Standard
 
-The industry standard for open-source and corporate GitHub organizations is to use **lowercase kebab-case** exclusively, and to omit the organization's name from the repository slug.
+Use **lowercase kebab-case** and omit the organization's name from the repository slug.
 
 ## Proposed Renames
 

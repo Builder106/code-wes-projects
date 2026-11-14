@@ -12,11 +12,11 @@ The proposal email job now runs its existing build command and audits production
 
 ## 2026-10-24: Reconcile repository roadmap and close retired v1.1 issues #roadmap #hygiene
 
-Reconciled `ROADMAP.md` to reflect the graduation of Comment Lens and Piano Tool to standalone repositories, removing obsolete v1.1 task items. Closed legacy v1.1 tracker issues (#38, #39, #41) so the issue tracker is fully aligned with the active v1.2 WesNest Semantic Search milestone (#47).
+Updated `ROADMAP.md` after Comment Lens and Piano Tool moved to standalone repositories, removing obsolete v1.1 tasks. Closed the corresponding v1.1 tracker issues (#38, #39, #41); the active milestone is v1.2 WesNest Semantic Search (#47).
 
 ## 2026-10-24: Scaffold WesNest Search developer workflow and roadmap for Code_Wes #scaffold #dx #roadmap
 
-Prepped the repository for the Code_Wes student engineering team to complete the WesNest Semantic Search project. Added a zero-dependency local HTTP development server (`scripts/dev-server.mjs`) routing to `/api/search.js` alongside static assets, created `.env.example`, authored comprehensive team onboarding and contribution guides in `apps/wesnest-search/`, established a task issue template in `.github/ISSUE_TEMPLATE/`, and expanded `ROADMAP.md` with targeted delivery milestones across data scraping, backend filtering, frontend UI/a11y polish, and E2E verification.
+Prepared the repository for the Code_Wes team to continue WesNest Semantic Search. Added a zero-dependency local HTTP server (`scripts/dev-server.mjs`) that serves static assets and routes to `/api/search.js`, plus `.env.example`, onboarding and contribution guides in `apps/wesnest-search/`, and a task issue template in `.github/ISSUE_TEMPLATE/`. Expanded `ROADMAP.md` with milestones for scraping, backend filtering, frontend accessibility and UI work, and E2E verification.
 
 ## 2026-10-23: Enable strict proposal email typechecking #ci #decision
 
