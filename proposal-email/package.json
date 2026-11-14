@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "@react-email/components": "1.0.12",
-    "dotenv": "^18.0.9",
-    "nodemailer": "^10.3.1",
+    "dotenv": "^18.0.10",
+    "nodemailer": "^10.5.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "resend": "^6.37.0"
+    "resend": "^6.38.0"
   },
   "devDependencies": {
-    "@react-email/render": "^2.2.0",
+    "@react-email/render": "^2.3.1",
     "@types/node": "^26.6.6",
     "@types/nodemailer": "^8.0.2",
     "@types/react": "^19.3.0",
